@@ -41,4 +41,14 @@ return [
 
     'timeout' => (int) env('UPDATER_TIMEOUT', 180),
 
+    /*
+    | Server-local tracked files that are stashed automatically before pull
+    | (e.g. shared-hosting .htaccess tweaks) so git pull is not blocked.
+    | After a successful pull the stash is dropped and the repo copy is kept.
+    */
+    'preserve_files' => array_values(array_filter(array_map(
+        'trim',
+        explode(',', (string) env('UPDATER_PRESERVE_FILES', '.htaccess,index.php'))
+    ))),
+
 ];

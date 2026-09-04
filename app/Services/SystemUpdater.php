@@ -28,7 +28,8 @@ class SystemUpdater
         $localBranch = $this->gitOutput(['rev-parse', '--abbrev-ref', 'HEAD']);
         $localMessage = $this->gitOutput(['log', '-1', '--pretty=%s']);
         $localDate = $this->gitOutput(['log', '-1', '--pretty=%cI']);
-        $dirty = trim($this->gitOutput(['status', '--porcelain', '--untracked-files=no'])) !== '';
+        $dirtyFiles = $this->dirtyTrackedFiles();
+        $dirty = $dirtyFiles !== [];
 
         $remoteRef = "{$remote}/{$branch}";
         $remoteCommit = $this->gitOutput(['rev-parse', $remoteRef]);
@@ -54,6 +55,7 @@ class SystemUpdater
                 'message' => $localMessage,
                 'date' => $localDate,
                 'dirty' => $dirty,
+                'dirty_files' => $dirtyFiles,
             ],
             'remote_info' => [
                 'ref' => $remoteRef,
@@ -82,13 +84,43 @@ class SystemUpdater
     /**
      * Fast-forward pull from configured remote/branch, then run maintenance.
      *
-     * @return array{ok: bool, status: array, steps: list<array>}
+     * @return array{ok: bool, status: array, steps: list<array>, message?: string}
      */
     public function pull(): array
     {
         $remote = (string) config('updater.remote', 'origin');
         $branch = (string) config('updater.branch', 'main');
         $steps = [];
+
+        $dirtyFiles = $this->dirtyTrackedFiles();
+        $preserve = $this->preserveFiles();
+        $blocking = array_values(array_diff($dirtyFiles, $preserve));
+
+        if ($blocking !== []) {
+            return [
+                'ok' => false,
+                'message' => 'Local changes block pull: '.implode(', ', $blocking).'. Stash or commit them first.',
+                'status' => $this->status(),
+                'steps' => $steps,
+            ];
+        }
+
+        $toStash = array_values(array_intersect($dirtyFiles, $preserve));
+        if ($toStash !== []) {
+            $steps[] = $this->runGit(array_merge(
+                ['stash', 'push', '-m', 'updater-auto-preserve'],
+                ['--'],
+                $toStash,
+            ));
+            if (! ($steps[array_key_last($steps)]['ok'] ?? false)) {
+                return [
+                    'ok' => false,
+                    'message' => 'Could not stash server-local files before pull.',
+                    'status' => $this->status(),
+                    'steps' => $steps,
+                ];
+            }
+        }
 
         $steps[] = $this->runGit(['fetch', $remote, $branch, '--prune']);
         if (! ($steps[array_key_last($steps)]['ok'] ?? false)) {
@@ -98,6 +130,15 @@ class SystemUpdater
         $steps[] = $this->runGit(['pull', '--ff-only', $remote, $branch]);
         if (! ($steps[array_key_last($steps)]['ok'] ?? false)) {
             return ['ok' => false, 'status' => $this->status(), 'steps' => $steps];
+        }
+
+        // Keep the repo copies of preserve files (drop auto-stash; do not restore old overrides).
+        if ($toStash !== []) {
+            $drop = $this->runGit(['stash', 'drop']);
+            if (! $drop['ok'] && str_contains($drop['output'], 'No stash entries')) {
+                $drop['ok'] = true;
+            }
+            $steps[] = $drop;
         }
 
         if (config('updater.run_composer')) {
@@ -115,6 +156,45 @@ class SystemUpdater
             'status' => $this->status(),
             'steps' => $steps,
         ];
+    }
+
+    /**
+     * @return list<string>
+     */
+    private function dirtyTrackedFiles(): array
+    {
+        $output = $this->gitOutput(['status', '--porcelain', '--untracked-files=no']);
+        if ($output === '') {
+            return [];
+        }
+
+        $files = [];
+        foreach (preg_split("/\r\n|\n|\r/", $output) as $line) {
+            $line = rtrim($line);
+            if ($line === '') {
+                continue;
+            }
+            // Format: XY PATH or XY ORIG -> PATH
+            $path = trim(substr($line, 3));
+            if (str_contains($path, ' -> ')) {
+                $path = trim(strrchr($path, '>') ?: $path, "> ");
+            }
+            if ($path !== '') {
+                $files[] = $path;
+            }
+        }
+
+        return array_values(array_unique($files));
+    }
+
+    /**
+     * @return list<string>
+     */
+    private function preserveFiles(): array
+    {
+        $files = config('updater.preserve_files', ['.htaccess', 'index.php']);
+
+        return is_array($files) ? array_values(array_filter($files)) : ['.htaccess', 'index.php'];
     }
 
     /**

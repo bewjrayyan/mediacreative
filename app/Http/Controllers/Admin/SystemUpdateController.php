@@ -49,24 +49,16 @@ class SystemUpdateController extends Controller implements HasMiddleware
     {
         $this->ensureEnabled($updater);
 
-        if (($updater->status()['local']['dirty'] ?? false) === true) {
-            return response()->json([
-                'ok' => false,
-                'message' => 'Working tree has local changes. Commit or stash them before pulling.',
-                'data' => $updater->status(),
-            ], 422);
-        }
-
         $result = $updater->pull();
 
         return response()->json([
             'ok' => $result['ok'],
-            'message' => $result['ok']
+            'message' => $result['message'] ?? ($result['ok']
                 ? 'Pulled latest changes and ran post-update Artisan tasks.'
-                : 'Update finished with errors. Review the command output.',
+                : 'Update finished with errors. Review the command output.'),
             'data' => $result['status'],
             'steps' => $result['steps'],
-        ], $result['ok'] ? 200 : 500);
+        ], $result['ok'] ? 200 : 422);
     }
 
     public function maintenance(SystemUpdater $updater): JsonResponse
