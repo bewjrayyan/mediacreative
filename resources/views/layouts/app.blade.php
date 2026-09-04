@@ -2,7 +2,9 @@
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', setting('seo.meta_title', setting('site_name', 'DesignPro'))) · {{ setting('site_name', 'DesignPro') }}</title>
     <meta name="description" content="@yield('meta_description', setting('seo.meta_description', ''))">
@@ -724,26 +726,47 @@
         .footer a { color: var(--text-muted); font-size: 14px; display: block; margin-bottom: 10px; transition: color .2s; }
         .footer a:hover { color: #fff; }
         .footer-logo { display: flex; align-items: center; gap: 10px; font-family: 'Inter Tight', sans-serif; font-weight: 800; font-size: 20px; color: #fff; margin-bottom: 14px; }
-        .footer-about { font-size: 14px; margin-bottom: 20px; max-width: 32ch; }
-        .footer-social, .social-links { display: flex; flex-wrap: wrap; gap: 10px; }
+        .footer-about { font-size: 14px; line-height: 1.6; margin-bottom: 20px; max-width: 36ch; color: rgba(255,255,255,.62); }
+        .footer-social, .social-links { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
         .social-btn {
-            width: 42px; height: 42px; border-radius: 12px;
-            display: grid; place-items: center;
+            width: 44px; height: 44px; min-width: 44px; min-height: 44px;
+            border-radius: 50%;
+            display: grid !important; place-items: center;
+            margin: 0 !important;
             color: #fff !important;
+            border: 1px solid transparent;
             box-shadow: 0 4px 12px rgba(15, 23, 42, 0.12);
-            transition: transform .2s ease, box-shadow .2s ease, filter .2s ease;
+            transition: transform .2s ease, box-shadow .2s ease, filter .2s ease, background-color .2s ease, border-color .2s ease;
         }
-        .social-btn svg { width: 18px; height: 18px; display: block; }
+        .social-btn svg { width: 18px; height: 18px; display: block; pointer-events: none; }
         .social-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 18px rgba(15, 23, 42, 0.18); filter: brightness(1.06); }
+        .social-btn:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
         .social-btn--facebook { background: #1877F2; }
         .social-btn--instagram {
             background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%);
         }
         .social-btn--linkedin { background: #0A66C2; }
-        .social-btn--x { background: #111827; }
+        .social-btn--x { background: #000; }
         .social-btn--github { background: #24292F; }
-        .footer .social-btn { box-shadow: none; }
-        .footer .social-btn:hover { box-shadow: 0 6px 16px rgba(0,0,0,.28); }
+        .footer .social-btn {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.14);
+            box-shadow: none;
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+        }
+        .footer .social-btn--facebook { color: #4C9AFF !important; }
+        .footer .social-btn--instagram { color: #FF7AB8 !important; background: rgba(255, 255, 255, 0.08); }
+        .footer .social-btn--linkedin { color: #5BAAF5 !important; }
+        .footer .social-btn--x { color: #F3F4F6 !important; }
+        .footer .social-btn--github { color: #E5E7EB !important; }
+        .footer .social-btn:hover {
+            background: rgba(255, 255, 255, 0.14);
+            border-color: rgba(255, 255, 255, 0.28);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.28);
+            filter: none;
+            transform: translateY(-2px);
+        }
         .footer-bottom { border-top: 1px solid rgba(255,255,255,.1); padding: 22px 0; font-size: 13px; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
 
 
@@ -1322,6 +1345,8 @@
 
         @media (max-width: 900px) {
             .hero-grid, .service-detail-grid, .contact-grid { grid-template-columns: 1fr; }
+            .hero-grid .hero-visual { order: -1; }
+            .svc-hero-grid .svc-hero-visual { order: -1; }
             .services-grid, .portfolio-grid, .testimonial-grid, .blog-grid, .values-grid { grid-template-columns: 1fr; }
             .team-grid { grid-template-columns: 1fr 1fr; }
             .footer-grid { grid-template-columns: 1fr 1fr; }
@@ -1335,10 +1360,261 @@
             .gallery-grid { grid-template-columns: 1fr; }
             .hero-stats { gap: 24px; flex-wrap: wrap; }
         }
+
+        /* ── iOS-app mobile shell (phones) ───────────────── */
+        .ios-tabbar { display: none; }
+        @media (max-width: 768px) {
+            body.site-shell {
+                --ios-topbar-h: 56px;
+                --ios-tabbar-h: 72px;
+                --ios-tabbar-inset: 12px;
+                padding-bottom: calc(var(--ios-tabbar-h) + var(--ios-tabbar-inset) + env(safe-area-inset-bottom, 0px));
+                background: #F2F2F7;
+                -webkit-tap-highlight-color: transparent;
+            }
+            body.site-shell .navbar {
+                position: sticky;
+                top: 0;
+                z-index: 200;
+                height: calc(var(--ios-topbar-h) + env(safe-area-inset-top, 0px));
+                padding-top: env(safe-area-inset-top, 0px);
+                background: rgba(242, 242, 247, 0.82);
+                backdrop-filter: saturate(180%) blur(20px);
+                -webkit-backdrop-filter: saturate(180%) blur(20px);
+                border-bottom: 0.5px solid rgba(60, 60, 67, 0.18);
+                box-shadow: none;
+            }
+            body.site-shell .nav-inner {
+                height: var(--ios-topbar-h);
+                padding: 0 4px;
+            }
+            body.site-shell .nav-logo {
+                font-size: 17px;
+                font-weight: 700;
+                letter-spacing: -0.03em;
+            }
+            body.site-shell .nav-logo .logo-mark {
+                width: 30px;
+                height: 30px;
+                border-radius: 8px;
+            }
+            body.site-shell .nav-links,
+            body.site-shell .nav-toggle,
+            body.site-shell .nav-cta .btn {
+                display: none !important;
+            }
+            body.site-shell .nav-cta {
+                gap: 8px;
+            }
+            body.site-shell .lang-switch__btn {
+                height: 34px;
+                padding: 0 10px;
+                border-radius: 999px;
+                background: rgba(120, 120, 128, 0.12);
+                border: none;
+            }
+            body.site-shell .container {
+                padding-left: 16px;
+                padding-right: 16px;
+            }
+            body.site-shell .section {
+                padding: 36px 0;
+            }
+            body.site-shell .page-hero {
+                border-radius: 0 0 24px 24px;
+            }
+            body.site-shell .services-page .page-hero.svc-hero {
+                padding: 36px 0 40px;
+                margin: 0 -16px;
+                width: calc(100% + 32px);
+                max-width: none;
+                border-radius: 0 0 28px 28px;
+            }
+            body.site-shell .services-page .page-hero.svc-hero .container {
+                max-width: none;
+            }
+            body.site-shell .service-card,
+            body.site-shell .project-card,
+            body.site-shell .blog-card,
+            body.site-shell .testimonial-card,
+            body.site-shell .contact-form-wrap,
+            body.site-shell .svc-timeline__content,
+            body.site-shell .svc-hero-panel {
+                border-radius: 16px;
+                border-color: rgba(60, 60, 67, 0.12);
+                box-shadow: 0 1px 2px rgba(0,0,0,.04), 0 8px 24px rgba(0,0,0,.06);
+            }
+            body.site-shell .btn {
+                border-radius: 14px;
+                min-height: 48px;
+                font-weight: 600;
+            }
+            body.site-shell .btn-lg {
+                min-height: 52px;
+                padding-left: 22px;
+                padding-right: 22px;
+            }
+            body.site-shell .hero-grid .hero-visual,
+            body.site-shell .svc-hero-grid .svc-hero-visual {
+                order: -1;
+            }
+            body.site-shell .hero-grid,
+            body.site-shell .svc-hero-grid {
+                gap: 24px;
+            }
+            body.site-shell .svc-hero-actions {
+                flex-direction: column;
+            }
+            body.site-shell .svc-hero-actions .btn {
+                width: 100%;
+                justify-content: center;
+            }
+            body.site-shell .footer {
+                padding-top: 40px;
+                margin-bottom: 8px;
+                border-radius: 24px 24px 0 0;
+            }
+            body.site-shell .footer-grid > div:nth-child(n+2) {
+                display: none;
+            }
+            body.site-shell .footer-grid {
+                grid-template-columns: 1fr;
+            }
+            body.site-shell .footer-brand {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
+            body.site-shell .footer-logo {
+                justify-content: center;
+            }
+            body.site-shell .footer-about {
+                max-width: 34ch;
+                margin-left: auto;
+                margin-right: auto;
+            }
+            body.site-shell .footer-social {
+                justify-content: center;
+                gap: 12px;
+            }
+            body.site-shell .footer .social-btn {
+                width: 48px;
+                height: 48px;
+                min-width: 48px;
+                min-height: 48px;
+            }
+            body.site-shell .footer .social-btn svg {
+                width: 20px;
+                height: 20px;
+            }
+            body.site-shell .footer-bottom {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            /* Floating glass bottom dock (≤5 tabs, safe-area, 44×44 touch) */
+            .ios-tabbar {
+                display: grid;
+                grid-template-columns: repeat(5, minmax(0, 1fr));
+                gap: 2px;
+                position: fixed;
+                left: max(12px, env(safe-area-inset-left, 0px));
+                right: max(12px, env(safe-area-inset-right, 0px));
+                bottom: calc(var(--ios-tabbar-inset) + env(safe-area-inset-bottom, 0px));
+                z-index: 300;
+                height: var(--ios-tabbar-h);
+                padding: 8px 6px;
+                margin: 0;
+                border-radius: 28px;
+                background: rgba(255, 255, 255, 0.78);
+                backdrop-filter: saturate(180%) blur(24px);
+                -webkit-backdrop-filter: saturate(180%) blur(24px);
+                border: 1px solid rgba(255, 255, 255, 0.65);
+                box-shadow:
+                    0 1px 0 rgba(255, 255, 255, 0.7) inset,
+                    0 10px 40px rgba(15, 23, 42, 0.14),
+                    0 2px 8px rgba(15, 23, 42, 0.06);
+            }
+            .ios-tabbar__item {
+                position: relative;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                gap: 4px;
+                min-width: 0;
+                min-height: 56px;
+                padding: 6px 4px;
+                border-radius: 20px;
+                color: #636366;
+                text-decoration: none;
+                font-size: 10px;
+                font-weight: 600;
+                letter-spacing: -0.01em;
+                line-height: 1.1;
+                -webkit-font-smoothing: antialiased;
+                transition: color .18s ease, background-color .18s ease, opacity .12s ease;
+            }
+            .ios-tabbar__icon {
+                display: grid;
+                place-items: center;
+                width: 36px;
+                height: 28px;
+                border-radius: 14px;
+                transition: background-color .18s ease, transform .18s ease;
+            }
+            .ios-tabbar__item svg {
+                width: 22px;
+                height: 22px;
+                display: block;
+            }
+            .ios-tabbar__item svg[data-icon="filled"] {
+                display: none;
+            }
+            .ios-tabbar__item > span:not(.ios-tabbar__icon) {
+                max-width: 100%;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+            }
+            .ios-tabbar__item.is-active {
+                color: var(--primary);
+            }
+            .ios-tabbar__item.is-active .ios-tabbar__icon {
+                background: color-mix(in srgb, var(--primary) 14%, transparent);
+            }
+            .ios-tabbar__item.is-active svg[data-icon="outline"] {
+                display: none;
+            }
+            .ios-tabbar__item.is-active svg[data-icon="filled"] {
+                display: block;
+            }
+            .ios-tabbar__item:focus-visible {
+                outline: 2px solid var(--primary);
+                outline-offset: 2px;
+            }
+            .ios-tabbar__item:active {
+                opacity: 0.72;
+            }
+            .ios-tabbar__item:active .ios-tabbar__icon {
+                transform: scale(0.94);
+            }
+            @media (prefers-reduced-motion: reduce) {
+                .ios-tabbar__item,
+                .ios-tabbar__icon {
+                    transition: none;
+                }
+                .ios-tabbar__item:active .ios-tabbar__icon {
+                    transform: none;
+                }
+            }
+        }
+
     </style>
     @stack('styles')
 </head>
-<body>
+<body class="site-shell">
     {{-- Navbar --}}
     <nav class="navbar">
         <div class="container nav-inner">
@@ -1438,33 +1714,33 @@
     <footer class="footer">
         <div class="container">
             <div class="footer-grid">
-                <div>
+                <div class="footer-brand">
                     <div class="footer-logo">
                         <span class="logo-mark{{ $siteLogoUrl ? ' logo-mark--image' : '' }}" style="width:34px;height:34px;border-radius:9px;{{ $siteLogoUrl ? 'background:transparent;overflow:hidden;' : 'background:var(--primary);' }}display:grid;place-items:center">
                             @if($siteLogoUrl)
                                 <img src="{{ $siteLogoUrl }}" alt="{{ setting('site_name', 'DesignPro') }}" style="width:100%;height:100%;object-fit:contain">
                             @else
-                                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#fff" stroke-width="2.4"><path d="M12 19l7-7 3 3-7 7-3-3z"/></svg>
+                                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#fff" stroke-width="2.4" aria-hidden="true"><path d="M12 19l7-7 3 3-7 7-3-3z"/></svg>
                             @endif
                         </span>
                         {{ setting('site_name', 'DesignPro') }}
                     </div>
                     <p class="footer-about">{{ setting('general.site_description', 'We design and build exceptional digital products.') }}</p>
-                    <div class="footer-social social-links">
+                    <div class="footer-social social-links" aria-label="{{ __('Social media') }}">
                         @if(setting('social.facebook'))
-                        <a class="social-btn social-btn--facebook" href="{{ setting('social.facebook') }}" target="_blank" rel="noopener" aria-label="Facebook"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M14 13.5h2.5l1-4H14v-2c0-1.03 0-2 2-2h1.5V2.14C17.17 2.09 15.92 2 14.71 2 11.93 2 10 3.66 10 6.79V9.5H7v4h3V22h4z"/></svg></a>
+                        <a class="social-btn social-btn--facebook" href="{{ setting('social.facebook') }}" target="_blank" rel="noopener noreferrer" aria-label="Facebook"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M14 13.5h2.5l1-4H14v-2c0-1.03 0-2 2-2h1.5V2.14C17.17 2.09 15.92 2 14.71 2 11.93 2 10 3.66 10 6.79V9.5H7v4h3V22h4z"/></svg></a>
                         @endif
                         @if(setting('social.instagram'))
-                        <a class="social-btn social-btn--instagram" href="{{ setting('social.instagram') }}" target="_blank" rel="noopener" aria-label="Instagram"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 2h10a5 5 0 0 1 5 5v10a5 5 0 0 1-5 5H7a5 5 0 0 1-5-5V7a5 5 0 0 1 5-5zm0 2a3 3 0 0 0-3 3v10a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3V7a3 3 0 0 0-3-3H7zm11.5 1.5a1.25 1.25 0 1 1 0 2.5 1.25 1.25 0 0 1 0-2.5zM12 7a5 5 0 1 1 0 10 5 5 0 0 1 0-10zm0 2a3 3 0 1 0 0 6 3 3 0 0 0 0-6z"/></svg></a>
+                        <a class="social-btn social-btn--instagram" href="{{ setting('social.instagram') }}" target="_blank" rel="noopener noreferrer" aria-label="Instagram"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 2h10a5 5 0 0 1 5 5v10a5 5 0 0 1-5 5H7a5 5 0 0 1-5-5V7a5 5 0 0 1 5-5zm0 2a3 3 0 0 0-3 3v10a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3V7a3 3 0 0 0-3-3H7zm11.5 1.5a1.25 1.25 0 1 1 0 2.5 1.25 1.25 0 0 1 0-2.5zM12 7a5 5 0 1 1 0 10 5 5 0 0 1 0-10zm0 2a3 3 0 1 0 0 6 3 3 0 0 0 0-6z"/></svg></a>
                         @endif
                         @if(setting('social.linkedin'))
-                        <a class="social-btn social-btn--linkedin" href="{{ setting('social.linkedin') }}" target="_blank" rel="noopener" aria-label="LinkedIn"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M6.94 6.5A2.19 2.19 0 1 1 4.76 4.3 2.19 2.19 0 0 1 6.94 6.5zM7 8.86H2.75V21H7zm5.5 0h-4.2V21h4.2v-6.55c0-1.73.82-2.84 2.33-2.84 1.4 0 2.07.96 2.07 2.84V21H21v-7.17c0-3.66-1.96-5.36-4.57-5.36a4.1 4.1 0 0 0-3.93 2.17V8.86z"/></svg></a>
+                        <a class="social-btn social-btn--linkedin" href="{{ setting('social.linkedin') }}" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6.94 6.5A2.19 2.19 0 1 1 4.76 4.3 2.19 2.19 0 0 1 6.94 6.5zM7 8.86H2.75V21H7zm5.5 0h-4.2V21h4.2v-6.55c0-1.73.82-2.84 2.33-2.84 1.4 0 2.07.96 2.07 2.84V21H21v-7.17c0-3.66-1.96-5.36-4.57-5.36a4.1 4.1 0 0 0-3.93 2.17V8.86z"/></svg></a>
                         @endif
                         @if(setting('social.twitter'))
-                        <a class="social-btn social-btn--x" href="{{ setting('social.twitter') }}" target="_blank" rel="noopener" aria-label="X/Twitter"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.9 1.2h3.7l-8.1 9.3L24 22.8h-7.4l-5.8-7.6-6.7 7.6H.4l8.7-9.9L0 1.2h7.6l5.3 7 6-7z"/></svg></a>
+                        <a class="social-btn social-btn--x" href="{{ setting('social.twitter') }}" target="_blank" rel="noopener noreferrer" aria-label="X (Twitter)"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.9 1.2h3.7l-8.1 9.3L24 22.8h-7.4l-5.8-7.6-6.7 7.6H.4l8.7-9.9L0 1.2h7.6l5.3 7 6-7z"/></svg></a>
                         @endif
                         @if(setting('social.github'))
-                        <a class="social-btn social-btn--github" href="{{ setting('social.github') }}" target="_blank" rel="noopener" aria-label="GitHub"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.5 2 2 6.6 2 12a10 10 0 0 0 6.8 9.5c.5.1.7-.2.7-.5v-1.9c-2.8.6-3.4-1.2-3.4-1.2-.5-1.2-1.1-1.5-1.1-1.5-.9-.6.1-.6.1-.6 1 .1 1.5 1 1.5 1 .9 1.5 2.3 1.1 2.9.8.1-.6.4-1.1.7-1.3-2.2-.3-4.5-1.1-4.5-4.9 0-1.1.4-2 1-2.7-.1-.2-.4-1.2.1-2.6 0 0 .8-.3 2.7 1A9.4 9.4 0 0 1 12 6.3c.8 0 1.6.1 2.4.3 1.9-.7 2.7-1 2.7-1 .5 1.4.2 2.4.1 2.6.6.7 1 1.6 1 2.7 0 3.8-2.3 4.6-4.5 4.9.4.3.7.9.7 1.9V21c0 .3.2.6.7.5A10 10 0 0 0 22 12c0-5.4-4.5-10-10-10z"/></svg></a>
+                        <a class="social-btn social-btn--github" href="{{ setting('social.github') }}" target="_blank" rel="noopener noreferrer" aria-label="GitHub"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2C6.5 2 2 6.6 2 12a10 10 0 0 0 6.8 9.5c.5.1.7-.2.7-.5v-1.9c-2.8.6-3.4-1.2-3.4-1.2-.5-1.2-1.1-1.5-1.1-1.5-.9-.6.1-.6.1-.6 1 .1 1.5 1 1.5 1 .9 1.5 2.3 1.1 2.9.8.1-.6.4-1.1.7-1.3-2.2-.3-4.5-1.1-4.5-4.9 0-1.1.4-2 1-2.7-.1-.2-.4-1.2.1-2.6 0 0 .8-.3 2.7 1A9.4 9.4 0 0 1 12 6.3c.8 0 1.6.1 2.4.3 1.9-.7 2.7-1 2.7-1 .5 1.4.2 2.4.1 2.6.6.7 1 1.6 1 2.7 0 3.8-2.3 4.6-4.5 4.9.4.3.7.9.7 1.9V21c0 .3.2.6.7.5A10 10 0 0 0 22 12c0-5.4-4.5-10-10-10z"/></svg></a>
                         @endif
                     </div>
                 </div>
@@ -1504,6 +1780,45 @@
             </div>
         </div>
     </footer>
+
+    {{-- Floating glass mobile dock (5 primary destinations) --}}
+    <nav class="ios-tabbar" aria-label="{{ __('Primary') }}">
+        <a href="{{ route('home') }}" class="ios-tabbar__item {{ request()->routeIs('home') ? 'is-active' : '' }}" @if(request()->routeIs('home')) aria-current="page" @endif>
+            <span class="ios-tabbar__icon" aria-hidden="true">
+                <svg data-icon="outline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V20a1 1 0 0 0 1 1h4.5v-6h3V21H18a1 1 0 0 0 1-1V9.5"/></svg>
+                <svg data-icon="filled" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.6 2.8 10.2a1 1 0 0 0-.3.7V20a2 2 0 0 0 2 2h4.7v-6.2h5.6V22H19.5a2 2 0 0 0 2-2v-9.1a1 1 0 0 0-.3-.7L12 2.6z"/></svg>
+            </span>
+            <span>{{ __('Home') }}</span>
+        </a>
+        <a href="{{ route('services.index') }}" class="ios-tabbar__item {{ request()->routeIs('services.*') ? 'is-active' : '' }}" @if(request()->routeIs('services.*')) aria-current="page" @endif>
+            <span class="ios-tabbar__icon" aria-hidden="true">
+                <svg data-icon="outline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7.5" height="7.5" rx="1.5"/><rect x="13.5" y="3" width="7.5" height="7.5" rx="1.5"/><rect x="3" y="13.5" width="7.5" height="7.5" rx="1.5"/><rect x="13.5" y="13.5" width="7.5" height="7.5" rx="1.5"/></svg>
+                <svg data-icon="filled" viewBox="0 0 24 24" fill="currentColor"><rect x="2.5" y="2.5" width="8.2" height="8.2" rx="2"/><rect x="13.3" y="2.5" width="8.2" height="8.2" rx="2"/><rect x="2.5" y="13.3" width="8.2" height="8.2" rx="2"/><rect x="13.3" y="13.3" width="8.2" height="8.2" rx="2"/></svg>
+            </span>
+            <span>{{ __('Services') }}</span>
+        </a>
+        <a href="{{ route('portfolio.index') }}" class="ios-tabbar__item {{ request()->routeIs('portfolio.*') ? 'is-active' : '' }}" @if(request()->routeIs('portfolio.*')) aria-current="page" @endif>
+            <span class="ios-tabbar__icon" aria-hidden="true">
+                <svg data-icon="outline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 15 4.5-4.5a2 2 0 0 1 2.8 0L16 16"/><path d="m14 14 1.5-1.5a2 2 0 0 1 2.8 0L21 15"/><circle cx="8.5" cy="9" r="1.2"/></svg>
+                <svg data-icon="filled" viewBox="0 0 24 24" fill="currentColor"><path d="M4 4.5A2.5 2.5 0 0 0 1.5 7v11A2.5 2.5 0 0 0 4 20.5h16a2.5 2.5 0 0 0 2.5-2.5V7A2.5 2.5 0 0 0 20 4.5H4zm4.2 4.2a1.4 1.4 0 1 1 0 2.8 1.4 1.4 0 0 1 0-2.8zM3.2 16.8l3.9-3.9a2.2 2.2 0 0 1 3.1 0l3.2 3.2 1.3-1.3a2.2 2.2 0 0 1 3.1 0l2.9 2.9v.8A1.2 1.2 0 0 1 20 19.2H4a1.2 1.2 0 0 1-1.2-1.2v-1.2z"/></svg>
+            </span>
+            <span>{{ __('Portfolio') }}</span>
+        </a>
+        <a href="{{ route('blog.index') }}" class="ios-tabbar__item {{ request()->routeIs('blog.*') ? 'is-active' : '' }}" @if(request()->routeIs('blog.*')) aria-current="page" @endif>
+            <span class="ios-tabbar__icon" aria-hidden="true">
+                <svg data-icon="outline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h10a2 2 0 0 1 2 2v14l-7-3-7 3V6a2 2 0 0 1 2-2z"/><path d="M19 6h.5A2.5 2.5 0 0 1 22 8.5V20l-3-1.2"/></svg>
+                <svg data-icon="filled" viewBox="0 0 24 24" fill="currentColor"><path d="M5.2 2.8h9.6A2.7 2.7 0 0 1 17.5 5.5V19.8l-6.3-2.7-6.3 2.7V5.5A2.7 2.7 0 0 1 5.2 2.8zm13.3 2.4h.3A3.2 3.2 0 0 1 22 8.4V19.6l-3.5-1.4V5.2z"/></svg>
+            </span>
+            <span>{{ __('Blog') }}</span>
+        </a>
+        <a href="{{ route('contact.index') }}" class="ios-tabbar__item {{ request()->routeIs('contact.*') ? 'is-active' : '' }}" @if(request()->routeIs('contact.*')) aria-current="page" @endif>
+            <span class="ios-tabbar__icon" aria-hidden="true">
+                <svg data-icon="outline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3.1-8.7A2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.8.3 1.6.6 2.3a2 2 0 0 1-.5 2.1L8 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.7.3 1.5.5 2.3.6a2 2 0 0 1 1.7 2.1z"/></svg>
+                <svg data-icon="filled" viewBox="0 0 24 24" fill="currentColor"><path d="M21.2 16.7v2.8a2.4 2.4 0 0 1-2.6 2.4 20.4 20.4 0 0 1-8.9-3.2 20 20 0 0 1-6.2-6.2A20.4 20.4 0 0 1 .4 3.6 2.4 2.4 0 0 1 2.8.9h2.8a2.4 2.4 0 0 1 2.4 2c.1.9.4 1.8.7 2.6a2.4 2.4 0 0 1-.5 2.5L6.6 9.6a16.8 16.8 0 0 0 6.4 6.4l1.6-1.6a2.4 2.4 0 0 1 2.5-.5c.8.3 1.7.6 2.6.7a2.4 2.4 0 0 1 1.5 2.1z"/></svg>
+            </span>
+            <span>{{ __('Contact') }}</span>
+        </a>
+    </nav>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
