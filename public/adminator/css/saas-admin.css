@@ -1,4 +1,69 @@
 /* Admin SaaS pattern — shared across CMS pages */
+
+/* Pin shell chrome: sticky topbar + sticky footer, scroll only .content */
+html, body { height: 100%; }
+.shell {
+  min-height: 100vh;
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+}
+.shell > .main {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  height: 100%;
+  overflow: hidden;
+}
+.d-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 60;
+  flex-shrink: 0;
+  background: color-mix(in srgb, var(--bg-card) 92%, transparent);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+.shell > .main > .content {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+.d-footer {
+  position: sticky;
+  bottom: 0;
+  z-index: 50;
+  flex-shrink: 0;
+  margin-top: auto;
+  background: color-mix(in srgb, var(--bg-card) 94%, transparent);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-top: 1px solid var(--border);
+}
+@media (max-width: 720px) {
+  .shell {
+    height: auto;
+    min-height: 100vh;
+    min-height: 100dvh;
+    overflow: visible;
+  }
+  .shell > .main {
+    height: auto;
+    min-height: 100vh;
+    min-height: 100dvh;
+    overflow: visible;
+  }
+  .shell > .main > .content {
+    overflow: visible;
+  }
+  .d-topbar,
+  .d-footer {
+    position: sticky;
+  }
+}
+
 .saas-editor { --saas-radius: 14px; --saas-gap: 20px; max-width: 1100px; margin: 0 auto; }
 .saas-toolbar {
   position: sticky; top: 0; z-index: 40;
