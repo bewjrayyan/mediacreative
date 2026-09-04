@@ -18,6 +18,7 @@ use App\Http\Controllers\Admin\UiPageController;
 use App\Http\Controllers\BlogController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\LocaleController;
 use App\Http\Controllers\PageViewController;
 use App\Http\Controllers\PortfolioController;
 use App\Http\Controllers\ServiceController;
@@ -30,6 +31,10 @@ use Illuminate\Support\Facades\Route;
 */
 
 // ─── Public Frontend Routes ───────────────────────────────
+Route::get('/locale/{locale}', LocaleController::class)
+    ->whereIn('locale', ['en', 'ms', 'id'])
+    ->name('locale.switch');
+
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
 Route::get('/services', [ServiceController::class, 'index'])->name('services.index');

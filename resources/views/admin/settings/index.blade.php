@@ -14,6 +14,7 @@
         'social' => ['label' => 'Social', 'hint' => 'Profile links'],
         'seo' => ['label' => 'SEO', 'hint' => 'Search & share'],
         'home' => ['label' => 'Homepage', 'hint' => 'Hero & CTA'],
+        'services_page' => ['label' => 'Services page', 'hint' => 'Flow & tech'],
         'footer' => ['label' => 'Footer', 'hint' => 'Copyright & links'],
         'cache' => ['label' => 'Clear cache', 'hint' => 'Refresh admin UI'],
         'updates' => ['label' => 'Updates', 'hint' => 'GitHub deploy'],
@@ -335,6 +336,85 @@
                                     <label class="saas-label" for="cta_link">CTA link</label>
                                     <input class="saas-input" id="cta_link" type="text" name="cta_link" value="{{ old('cta_link', $allSettings['cta_link'] ?? '') }}" placeholder="/contact or https://…">
                                 </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+
+
+                {{-- Services page --}}
+                <div class="saas-settings-panel" data-panel="services_page" @if($activeTab !== 'services_page') hidden @endif>
+                    <section class="saas-panel">
+                        <div class="saas-panel__head">
+                            <div>
+                                <h2 class="saas-panel__title">Services page</h2>
+                                <p class="saas-panel__sub">Extra sections shown below your service cards (intro, flow, technologies, quote, CTA). Inspired by modern studio layouts; your CMS services list stays above.</p>
+                            </div>
+                        </div>
+                        <div class="saas-panel__body">
+                            <div class="saas-field">
+                                <label class="saas-label" for="services_intro_title">Intro title</label>
+                                <input class="saas-input" id="services_intro_title" type="text" name="services_intro_title" value="{{ old('services_intro_title', $allSettings['services_intro_title'] ?? '') }}">
+                            </div>
+                            <div class="saas-field">
+                                <label class="saas-label" for="services_intro_body">Intro body</label>
+                                <textarea class="saas-textarea" id="services_intro_body" name="services_intro_body" rows="6">{{ old('services_intro_body', $allSettings['services_intro_body'] ?? '') }}</textarea>
+                                <p class="saas-help">Separate paragraphs with a blank line.</p>
+                            </div>
+                            <div class="saas-field">
+                                <label class="saas-label" for="services_intro_stack">Stack / approach paragraph</label>
+                                <textarea class="saas-textarea" id="services_intro_stack" name="services_intro_stack" rows="3">{{ old('services_intro_stack', $allSettings['services_intro_stack'] ?? '') }}</textarea>
+                            </div>
+
+                            <hr class="saas-divider" style="margin:28px 0;border:0;border-top:1px solid var(--border,#E4E8EF)">
+
+                            <div class="saas-field">
+                                <label class="saas-label" for="services_flow_heading">Flow heading</label>
+                                <input class="saas-input" id="services_flow_heading" type="text" name="services_flow_heading" value="{{ old('services_flow_heading', $allSettings['services_flow_heading'] ?? '') }}">
+                            </div>
+                            <div class="saas-field">
+                                <label class="saas-label" for="services_flow_subheading">Flow subheading</label>
+                                <input class="saas-input" id="services_flow_subheading" type="text" name="services_flow_subheading" value="{{ old('services_flow_subheading', $allSettings['services_flow_subheading'] ?? '') }}">
+                            </div>
+                            <div class="saas-field">
+                                <label class="saas-label" for="services_flow_steps">Flow steps (JSON)</label>
+                                <textarea class="saas-textarea saas-textarea--mono" id="services_flow_steps" name="services_flow_steps" rows="14" style="min-height:auto;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12.5px">{{ old('services_flow_steps', $allSettings['services_flow_steps'] ?? '[]') }}</textarea>
+                                <p class="saas-help">Array of objects: <code>[{"title":"…","description":"…"}]</code></p>
+                            </div>
+
+                            <hr class="saas-divider" style="margin:28px 0;border:0;border-top:1px solid var(--border,#E4E8EF)">
+
+                            <div class="saas-field">
+                                <label class="saas-label" for="services_tech_heading">Technologies heading</label>
+                                <input class="saas-input" id="services_tech_heading" type="text" name="services_tech_heading" value="{{ old('services_tech_heading', $allSettings['services_tech_heading'] ?? '') }}">
+                            </div>
+                            <div class="saas-field">
+                                <label class="saas-label" for="services_tech_subheading">Technologies subheading</label>
+                                <input class="saas-input" id="services_tech_subheading" type="text" name="services_tech_subheading" value="{{ old('services_tech_subheading', $allSettings['services_tech_subheading'] ?? '') }}">
+                            </div>
+                            <div class="saas-field">
+                                <label class="saas-label" for="services_technologies">Technologies list</label>
+                                <input class="saas-input" id="services_technologies" type="text" name="services_technologies" value="{{ old('services_technologies', $allSettings['services_technologies'] ?? '') }}" placeholder="Laravel, React, …">
+                                <p class="saas-help">Comma-separated labels.</p>
+                            </div>
+                            <div class="saas-field">
+                                <label class="saas-label" for="services_quote">Quote</label>
+                                <textarea class="saas-textarea" id="services_quote" name="services_quote" rows="2">{{ old('services_quote', $allSettings['services_quote'] ?? '') }}</textarea>
+                            </div>
+
+                            <hr class="saas-divider" style="margin:28px 0;border:0;border-top:1px solid var(--border,#E4E8EF)">
+
+                            <div class="saas-field">
+                                <label class="saas-label" for="services_bottom_cta_title">Bottom CTA title</label>
+                                <input class="saas-input" id="services_bottom_cta_title" type="text" name="services_bottom_cta_title" value="{{ old('services_bottom_cta_title', $allSettings['services_bottom_cta_title'] ?? '') }}">
+                            </div>
+                            <div class="saas-field">
+                                <label class="saas-label" for="services_bottom_cta_body">Bottom CTA body</label>
+                                <textarea class="saas-textarea" id="services_bottom_cta_body" name="services_bottom_cta_body" rows="3">{{ old('services_bottom_cta_body', $allSettings['services_bottom_cta_body'] ?? '') }}</textarea>
+                            </div>
+                            <div class="saas-field">
+                                <label class="saas-label" for="services_bottom_cta_button">Bottom CTA button</label>
+                                <input class="saas-input" id="services_bottom_cta_button" type="text" name="services_bottom_cta_button" value="{{ old('services_bottom_cta_button', $allSettings['services_bottom_cta_button'] ?? '') }}">
                             </div>
                         </div>
                     </section>

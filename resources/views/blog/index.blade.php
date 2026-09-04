@@ -1,12 +1,12 @@
 @extends('layouts.app')
 
-@section('title', 'Blog - ' . setting('site_name', 'DesignPro'))
+@section('title', __('Blog') . ' - ' . setting('site_name', 'DesignPro'))
 
 @section('content')
 <section class="page-hero">
     <div class="container">
-        <h1>Blog</h1>
-        <p>Insights, thoughts, and expertise from our team.</p>
+        <h1>{{ __('Blog') }}</h1>
+        <p>{{ __('Insights, thoughts, and expertise from our team.') }}</p>
     </div>
 </section>
 
@@ -20,11 +20,11 @@
                         @if($post->cover_image)
                             <img src="{{ asset('storage/' . $post->cover_image) }}" alt="{{ $post->title }}">
                         @else
-                            <div style="width:100%;height:100%;background:var(--bg-soft);display:grid;place-items:center;color:var(--text-muted)">No Image</div>
+                            <div style="width:100%;height:100%;background:var(--bg-soft);display:grid;place-items:center;color:var(--text-muted)">{{ __('No Image') }}</div>
                         @endif
                     </div>
                     <div class="blog-body">
-                        <div class="blog-date">{{ $post->published_at?->format('F j, Y') }}</div>
+                        <div class="blog-date">{{ $post->published_at?->translatedFormat('d F Y') }}</div>
                         <h3>{{ $post->title }}</h3>
                         <p>{{ $post->excerpt ?? Str::limit(strip_tags($post->content), 100) }}</p>
                     </div>
@@ -32,7 +32,7 @@
             </article>
             @empty
             <div style="grid-column:1/-1;text-align:center;padding:60px 0;color:var(--text-muted)">
-                <p>No blog posts yet.</p>
+                <p>{{ __('No blog posts yet.') }}</p>
             </div>
             @endforelse
         </div>
@@ -40,9 +40,9 @@
         @if($posts->hasPages())
         <div class="pagination">
             @if($posts->onFirstPage())
-                <span class="page-item disabled"><span class="page-link">← Previous</span></span>
+                <span class="page-item disabled"><span class="page-link">← {{ __('Previous') }}</span></span>
             @else
-                <a class="page-item" href="{{ $posts->previousPageUrl() }}"><span class="page-link">← Previous</span></a>
+                <a class="page-item" href="{{ $posts->previousPageUrl() }}"><span class="page-link">← {{ __('Previous') }}</span></a>
             @endif
 
             @foreach($posts->getUrlRange(1, $posts->lastPage()) as $page => $url)
@@ -54,9 +54,9 @@
             @endforeach
 
             @if($posts->hasMorePages())
-                <a class="page-item" href="{{ $posts->nextPageUrl() }}"><span class="page-link">Next →</span></a>
+                <a class="page-item" href="{{ $posts->nextPageUrl() }}"><span class="page-link">{{ __('Next') }} →</span></a>
             @else
-                <span class="page-item disabled"><span class="page-link">Next →</span></span>
+                <span class="page-item disabled"><span class="page-link">{{ __('Next') }} →</span></span>
             @endif
         </div>
         @endif

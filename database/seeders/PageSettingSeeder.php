@@ -43,6 +43,51 @@ class PageSettingSeeder extends Seeder
             ['key' => 'cta_text', 'value' => 'Start Your Project', 'group' => 'home'],
             ['key' => 'cta_link', 'value' => '/contact', 'group' => 'home'],
 
+
+            // ── Services page ──────────────────────────────
+            ['key' => 'services_intro_title', 'value' => 'Builders, not just vendors', 'group' => 'services_page'],
+            ['key' => 'services_intro_body', 'value' => 'We\'re not just a service provider — we\'re builders ourselves. We\'ve created and launched our own products, so we know what it takes to turn ideas into reality.
+
+We\'re excited to bring that same framework — the stack we use on our own products — to yours. Before we commit, we\'ll take an honest look at your brief and confirm we\'re the right fit to help.
+
+When we are, we\'ll plan, design, develop, publish and deploy apps and admin dashboards on web and mobile.', 'group' => 'services_page'],
+            ['key' => 'services_intro_stack', 'value' => 'We use modern technologies to build your software. React drives the interfaces users touch every day; Laravel runs the APIs, admin panels, and business logic behind them — a full-stack pairing built to ship fast and scale with your product.', 'group' => 'services_page'],
+            ['key' => 'services_flow_heading', 'value' => 'Service Flow', 'group' => 'services_page'],
+            ['key' => 'services_flow_subheading', 'value' => 'From first conversation to launch — how we typically work with you.', 'group' => 'services_page'],
+            ['key' => 'services_flow_steps', 'value' => '[
+  {
+    "title": "Discovery & Planning",
+    "description": "We start by understanding your goals, users, and scope — mapping what to build before writing code."
+  },
+  {
+    "title": "UI / UX Design",
+    "description": "Wireframes, flows, and visual design so the product is clear to stakeholders and ready for development."
+  },
+  {
+    "title": "Development",
+    "description": "Modern web and mobile builds with a solid backend — shipped in parallel where it makes sense."
+  },
+  {
+    "title": "Testing & Refinement",
+    "description": "QA, device testing, and feedback rounds to catch issues early and polish the experience."
+  },
+  {
+    "title": "Launch",
+    "description": "Deploy to production, publish where needed, and hand over what you need to run it."
+  },
+  {
+    "title": "Support & Iteration",
+    "description": "Fixes, updates, and new features as your product grows — with the same team that built it."
+  }
+]', 'group' => 'services_page'],
+            ['key' => 'services_tech_heading', 'value' => 'Technologies We Use', 'group' => 'services_page'],
+            ['key' => 'services_tech_subheading', 'value' => 'We use the latest modern technologies to build your software.', 'group' => 'services_page'],
+            ['key' => 'services_technologies', 'value' => 'Laravel, Expo, React, React Native, Tailwind CSS, Bootstrap, iOS, Android', 'group' => 'services_page'],
+            ['key' => 'services_quote', 'value' => 'Plan & design before jumping into coding to make sure we get everything covered.', 'group' => 'services_page'],
+            ['key' => 'services_bottom_cta_title', 'value' => 'Hire us to build your custom software — web, mobile, or both.', 'group' => 'services_page'],
+            ['key' => 'services_bottom_cta_body', 'value' => 'Every business deserves digital products that retain customers and create real value. We\'re here to help with a free consultation on where and how to start.', 'group' => 'services_page'],
+            ['key' => 'services_bottom_cta_button', 'value' => 'Send enquiry', 'group' => 'services_page'],
+
             // ── Footer ──────────────────────────────────────
             ['key' => 'copyright', 'value' => '© 2026 DesignPro. All rights reserved.', 'group' => 'footer'],
             ['key' => 'quick_links', 'value' => '{"Services":"/services","Portfolio":"/portfolio","About":"/about","Blog":"/blog","Contact":"/contact"}', 'group' => 'footer'],

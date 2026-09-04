@@ -88,6 +88,8 @@
             'copyright',
             '© ' . date('Y') . ' ' . $adminSiteName . '. All rights reserved.'
         );
+        $adminLogoPath = setting('logo');
+        $adminLogoUrl = $adminLogoPath ? asset('storage/' . ltrim((string) $adminLogoPath, '/')) : null;
     @endphp
     <script>
       window.ADMINATOR_BASE_PATH = @json(rtrim(parse_url(url('/'), PHP_URL_PATH) ?: '', '/'));
@@ -101,6 +103,7 @@
         homeUrl: @json(route('admin.dashboard')),
         frontendUrl: @json(url('/')),
         siteName: @json($adminSiteName),
+        logoUrl: @json($adminLogoUrl),
         copyright: @json($adminCopyright),
         appVersion: @json(config('app.version')),
       };

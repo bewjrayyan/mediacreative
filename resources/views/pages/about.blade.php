@@ -1,27 +1,27 @@
 @extends('layouts.app')
 
-@section('title', 'About Us - ' . setting('site_name', 'DesignPro'))
+@section('title', __('About Us') . ' - ' . setting('site_name', 'DesignPro'))
 
 @section('content')
 <section class="page-hero">
     <div class="container">
-        <h1>About {{ setting('site_name', 'DesignPro') }}</h1>
-        <p>We're a team of passionate designers and developers dedicated to creating exceptional digital experiences.</p>
+        <h1>{{ __('About :name', ['name' => setting('site_name', 'DesignPro')]) }}</h1>
+        <p>{{ __("We're a team of passionate designers and developers dedicated to creating exceptional digital experiences.") }}</p>
     </div>
 </section>
 
 <section class="section">
     <div class="container">
         <div style="max-width:720px;margin:0 auto">
-            <h2 style="font-size:26px;margin-bottom:16px">Our Story</h2>
+            <h2 style="font-size:26px;margin-bottom:16px">{{ __('Our Story') }}</h2>
             <p style="font-size:17px;color:var(--text-light);margin-bottom:18px">
-                Founded with a vision to bridge the gap between stunning design and robust engineering, {{ setting('site_name', 'DesignPro') }} has grown from a small design studio into a full-service digital agency.
+                {{ __('About story p1', ['name' => setting('site_name', 'DesignPro')]) }}
             </p>
             <p style="font-size:17px;color:var(--text-light);margin-bottom:18px">
-                We believe that great digital products are the result of deep understanding, disciplined process, and relentless iteration. Every project starts with research and ends with measurable results.
+                {{ __('About story p2') }}
             </p>
             <p style="font-size:17px;color:var(--text-light)">
-                Our team combines expertise in UI/UX design, web development, mobile apps, and e-commerce solutions to deliver comprehensive digital products that help our clients succeed.
+                {{ __('About story p3') }}
             </p>
         </div>
     </div>
@@ -30,9 +30,9 @@
 <section class="section section-alt">
     <div class="container">
         <div class="section-head">
-            <span class="section-eyebrow">Team</span>
-            <h2>Meet Our Team</h2>
-            <p>The talented people behind our success.</p>
+            <span class="section-eyebrow">{{ __('Team') }}</span>
+            <h2>{{ __('Meet Our Team') }}</h2>
+            <p>{{ __('The talented people behind our success.') }}</p>
         </div>
         <div class="team-grid">
             @foreach($team as $member)
@@ -65,24 +65,24 @@
 <section class="section">
     <div class="container">
         <div class="section-head">
-            <span class="section-eyebrow">Values</span>
-            <h2>Our Core Values</h2>
+            <span class="section-eyebrow">{{ __('Values') }}</span>
+            <h2>{{ __('Our Core Values') }}</h2>
         </div>
         <div class="values-grid">
             <div class="value-card">
                 <div class="num">01</div>
-                <h3>Quality First</h3>
-                <p>We never compromise on quality. Every detail matters in creating exceptional digital experiences.</p>
+                <h3>{{ __('Quality First') }}</h3>
+                <p>{{ __('We never compromise on quality. Every detail matters in creating exceptional digital experiences.') }}</p>
             </div>
             <div class="value-card">
                 <div class="num">02</div>
-                <h3>Client Partnership</h3>
-                <p>We work as an extension of your team, fostering long-term relationships built on trust and results.</p>
+                <h3>{{ __('Client Partnership') }}</h3>
+                <p>{{ __('We work as an extension of your team, fostering long-term relationships built on trust and results.') }}</p>
             </div>
             <div class="value-card">
                 <div class="num">03</div>
-                <h3>Continuous Innovation</h3>
-                <p>We stay ahead of the curve, adopting new technologies and methodologies to deliver the best solutions.</p>
+                <h3>{{ __('Continuous Innovation') }}</h3>
+                <p>{{ __('We stay ahead of the curve, adopting new technologies and methodologies to deliver the best solutions.') }}</p>
             </div>
         </div>
     </div>
@@ -91,9 +91,9 @@
 <section class="section">
     <div class="container">
         <div class="cta-banner">
-            <h2>Want to Work With Us?</h2>
-            <p>We're always looking for new challenges and exciting projects.</p>
-            <a href="{{ route('contact.index') }}" class="btn btn-light btn-lg">Get in Touch</a>
+            <h2>{{ __('Want to Work With Us?') }}</h2>
+            <p>{{ __("We're always looking for new challenges and exciting projects.") }}</p>
+            <a href="{{ route('contact.index') }}" class="btn btn-light btn-lg">{{ __('Get in Touch') }}</a>
         </div>
     </div>
 </section>

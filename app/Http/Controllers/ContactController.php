@@ -12,7 +12,7 @@ class ContactController extends Controller
     {
         $services = Service::active()->ordered()->get();
 
-        return view('pages.contact', compact('services'));
+        return view('contact.index', compact('services'));
     }
 
     public function store(Request $request)

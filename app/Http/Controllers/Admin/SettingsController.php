@@ -69,7 +69,25 @@ class SettingsController extends Controller
             'copyright', 'quick_links',
         ]));
 
+        // Handle services page (extra sections below service cards)
+        $this->updateGroup('services_page', $request->only([
+            'services_intro_title',
+            'services_intro_body',
+            'services_intro_stack',
+            'services_flow_heading',
+            'services_flow_subheading',
+            'services_flow_steps',
+            'services_tech_heading',
+            'services_tech_subheading',
+            'services_technologies',
+            'services_quote',
+            'services_bottom_cta_title',
+            'services_bottom_cta_body',
+            'services_bottom_cta_button',
+        ]));
+
         Cache::forget('page_settings');
+        Cache::forget('page_settings_v2');
 
         return redirect()->route('admin.settings.index')
             ->with('success', 'Settings saved successfully.');
