@@ -101,7 +101,7 @@
                 @csrf
 
                 {{-- General --}}
-                <div class="tab-panel" data-panel="general" @if($activeTab !== 'general') style="display:none" @endif>
+                <div class="saas-settings-panel" data-panel="general" @if($activeTab !== 'general') hidden @endif>
                     <section class="saas-panel">
                         <div class="saas-panel__head">
                             <div>
@@ -177,7 +177,7 @@
                 </div>
 
                 {{-- Contact --}}
-                <div class="tab-panel" data-panel="contact" @if($activeTab !== 'contact') style="display:none" @endif>
+                <div class="saas-settings-panel" data-panel="contact" @if($activeTab !== 'contact') hidden @endif>
                     <section class="saas-panel">
                         <div class="saas-panel__head">
                             <div>
@@ -210,7 +210,7 @@
                 </div>
 
                 {{-- Social --}}
-                <div class="tab-panel" data-panel="social" @if($activeTab !== 'social') style="display:none" @endif>
+                <div class="saas-settings-panel" data-panel="social" @if($activeTab !== 'social') hidden @endif>
                     <section class="saas-panel">
                         <div class="saas-panel__head">
                             <div>
@@ -246,7 +246,7 @@
                 </div>
 
                 {{-- SEO --}}
-                <div class="tab-panel" data-panel="seo" @if($activeTab !== 'seo') style="display:none" @endif>
+                <div class="saas-settings-panel" data-panel="seo" @if($activeTab !== 'seo') hidden @endif>
                     <section class="saas-panel">
                         <div class="saas-panel__head">
                             <div>
@@ -290,7 +290,7 @@
                 </div>
 
                 {{-- Homepage --}}
-                <div class="tab-panel" data-panel="home" @if($activeTab !== 'home') style="display:none" @endif>
+                <div class="saas-settings-panel" data-panel="home" @if($activeTab !== 'home') hidden @endif>
                     <section class="saas-panel">
                         <div class="saas-panel__head">
                             <div>
@@ -339,7 +339,7 @@
                 </div>
 
                 {{-- Footer --}}
-                <div class="tab-panel" data-panel="footer" @if($activeTab !== 'footer') style="display:none" @endif>
+                <div class="saas-settings-panel" data-panel="footer" @if($activeTab !== 'footer') hidden @endif>
                     <section class="saas-panel">
                         <div class="saas-panel__head">
                             <div>
@@ -363,7 +363,7 @@
             </form>
 
             {{-- Updates --}}
-            <div class="tab-panel" data-panel="updates" @if($activeTab !== 'updates') style="display:none" @endif>
+            <div class="saas-settings-panel" data-panel="updates" @if($activeTab !== 'updates') hidden @endif>
                 <section class="saas-panel">
                     <div class="saas-panel__head">
                         <div>
@@ -429,8 +429,8 @@ document.addEventListener('DOMContentLoaded', function () {
         document.querySelectorAll('.saas-settings-nav__item').forEach(function (b) {
             b.classList.toggle('is-active', b.dataset.tab === tab);
         });
-        document.querySelectorAll('.tab-panel').forEach(function (p) {
-            p.style.display = p.dataset.panel === tab ? '' : 'none';
+        document.querySelectorAll('.saas-settings-panel').forEach(function (p) {
+            p.hidden = p.dataset.panel !== tab;
         });
         if (saveBar) saveBar.style.display = tab === 'updates' ? 'none' : '';
         if (previewBox) previewBox.style.display = tab === 'general' ? '' : 'none';
