@@ -1,0 +1,27 @@
+<?php
+
+namespace App\Http\Requests\Admin;
+
+use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
+
+class StorePostRequest extends FormRequest
+{
+    public function authorize(): bool
+    {
+        return true;
+    }
+
+    public function rules(): array
+    {
+        return [
+            'title' => ['required', 'string', 'max:255'],
+            'slug' => ['nullable', 'string', 'max:255', Rule::unique('posts', 'slug')],
+            'cover_image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp,gif', 'max:5120'],
+            'content' => ['required', 'string'],
+            'excerpt' => ['nullable', 'string', 'max:500'],
+            'is_published' => ['nullable', 'boolean'],
+            'published_at' => ['nullable', 'date'],
+        ];
+    }
+}
