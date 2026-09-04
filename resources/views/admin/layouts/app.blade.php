@@ -123,9 +123,9 @@
         csrf: document.querySelector('meta[name="csrf-token"]')?.content,
       };
     </script>
-    <script defer src="{{ asset('adminator/js/runtime.8f81f023.js') }}"></script>
-    <script defer src="{{ asset('adminator/js/2026.d80bdaa4.js') }}"></script>
-    <script defer src="{{ asset('adminator/js/admin-bridge.js') }}"></script>
+    <script defer src="{{ asset('adminator/js/runtime.8f81f023.js') }}?v={{ config('app.version') }}"></script>
+    <script defer src="{{ asset('adminator/js/2026.d80bdaa4.js') }}?v={{ config('app.version') }}"></script>
+    <script defer src="{{ asset('adminator/js/admin-bridge.js') }}?v={{ config('app.version') }}"></script>
     @stack('scripts')
 </body>
 </html>
