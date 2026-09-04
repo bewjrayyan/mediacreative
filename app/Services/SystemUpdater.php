@@ -231,6 +231,8 @@ class SystemUpdater
         $link = $this->runArtisan(['storage:link']);
         if (! $link['ok'] && str_contains($link['output'], 'already exists')) {
             $link['ok'] = true;
+            $link['output'] = 'Storage link already exists (skipped).';
+            $link['exit_code'] = 0;
         }
         $steps[] = $link;
 
