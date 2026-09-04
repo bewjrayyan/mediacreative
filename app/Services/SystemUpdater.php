@@ -316,9 +316,59 @@ class SystemUpdater
      */
     private function runArtisan(array $args): array
     {
-        $php = PHP_BINARY ?: 'php';
+        $php = $this->phpCliBinary();
 
         return $this->runShell('artisan', array_merge([$php, 'artisan'], $args));
+    }
+
+    /**
+     * Resolve a PHP CLI binary. PHP_BINARY under FPM points at php-fpm and cannot run Artisan.
+     */
+    private function phpCliBinary(): string
+    {
+        $configured = config('updater.php_binary');
+        if (is_string($configured) && $configured !== '' && is_executable($configured)) {
+            return $configured;
+        }
+
+        $candidates = [];
+
+        $envPath = getenv('PHP_BINARY') ?: '';
+        if (is_string($envPath) && $envPath !== '') {
+            $candidates[] = $envPath;
+        }
+
+        if (defined('PHP_BINARY') && is_string(PHP_BINARY) && PHP_BINARY !== '') {
+            $candidates[] = PHP_BINARY;
+        }
+
+        $version = PHP_MAJOR_VERSION.PHP_MINOR_VERSION;
+        $candidates = array_merge($candidates, [
+            '/opt/cpanel/ea-php'.$version.'/root/usr/bin/php',
+            '/opt/cpanel/ea-php83/root/usr/bin/php',
+            '/opt/cpanel/ea-php82/root/usr/bin/php',
+            '/usr/local/bin/php',
+            '/usr/bin/php',
+            'php',
+        ]);
+
+        foreach (array_unique($candidates) as $binary) {
+            if (! is_string($binary) || $binary === '') {
+                continue;
+            }
+
+            // Never invoke php-fpm / php-cgi for Artisan.
+            $base = strtolower(basename(strtok($binary, ' ') ?: $binary));
+            if (str_contains($base, 'fpm') || str_contains($base, 'cgi')) {
+                continue;
+            }
+
+            if ($binary === 'php' || is_executable($binary)) {
+                return $binary;
+            }
+        }
+
+        return 'php';
     }
 
     /**

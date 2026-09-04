@@ -42,6 +42,12 @@ return [
     'timeout' => (int) env('UPDATER_TIMEOUT', 180),
 
     /*
+    | Absolute path to the PHP CLI binary used for Artisan after pull.
+    | Leave empty to auto-detect (never use php-fpm from PHP_BINARY).
+    */
+    'php_binary' => env('UPDATER_PHP_BINARY'),
+
+    /*
     | Server-local tracked files that are stashed automatically before pull
     | (e.g. shared-hosting .htaccess tweaks) so git pull is not blocked.
     | After a successful pull the stash is dropped and the repo copy is kept.
