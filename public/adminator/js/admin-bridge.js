@@ -57,6 +57,33 @@
     });
   }
 
+  function injectFrontendButton() {
+    var u = window.ADMINATOR_USER;
+    var actions = document.querySelector('.d-topbar .topbar-actions');
+    if (!u || !u.frontendUrl || !actions) return;
+    if (actions.querySelector('.topbar-frontend')) return;
+
+    var link = document.createElement('a');
+    link.className = 'topbar-frontend';
+    link.href = u.frontendUrl;
+    link.target = '_blank';
+    link.rel = 'noopener noreferrer';
+    link.setAttribute('aria-label', 'View frontend website');
+    link.innerHTML =
+      '<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2">' +
+      '<path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>' +
+      '<path d="M15 3h6v6"/><path d="M10 14 21 3"/>' +
+      '</svg>' +
+      '<span>View site</span>';
+
+    var search = actions.querySelector('.cmd');
+    if (search) {
+      actions.insertBefore(link, search);
+    } else {
+      actions.insertBefore(link, actions.firstChild);
+    }
+  }
+
   function personalizeShell() {
     var u = window.ADMINATOR_USER;
     if (!u) return;
@@ -115,6 +142,7 @@
       patchAdminPaths();
       patchNavHrefs();
       patchHtmlLinks();
+      injectFrontendButton();
       personalizeShell();
       dismissFlash();
     }, 0);

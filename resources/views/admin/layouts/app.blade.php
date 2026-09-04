@@ -94,6 +94,7 @@
         settingsUrl: @json(route('admin.settings.index')),
         messagesUrl: @json(route('admin.messages.index')),
         homeUrl: @json(route('admin.dashboard')),
+        frontendUrl: @json(url('/')),
       };
       window.ADMINATOR_ROUTES = {
         'index.html': @json(url('/admin')),
