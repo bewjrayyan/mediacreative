@@ -2,74 +2,96 @@
 
 @section('title', 'Message Detail')
 @section('crumb', 'Messages · View')
+@section('active', 'messages')
 
 @section('content')
-<section class="hero">
-    <div class="hero-text">
-        <span class="eyebrow">Inbox</span>
-        <h1 class="hero-title">Message from <span class="accent">{{ $message->name }}</span></h1>
+<div class="saas-editor">
+    <div class="saas-toolbar">
+        <div class="saas-toolbar__left">
+            <a href="{{ route('admin.messages.index') }}" class="saas-back" title="Back to inbox" aria-label="Back to inbox">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+            </a>
+            <div class="saas-toolbar__meta">
+                <div class="saas-eyebrow">Inbox</div>
+                <h1 class="saas-title">{{ $message->name }}</h1>
+            </div>
+            <span class="saas-status {{ $message->status === 'replied' ? 'is-live' : 'is-draft' }}">
+                <span class="saas-status__dot"></span>
+                {{ ucfirst($message->status) }}
+            </span>
+        </div>
+        <div class="saas-toolbar__actions">
+            @if($message->status !== 'replied')
+            <form method="POST" action="{{ route('admin.messages.mark-replied', $message) }}">
+                @csrf @method('PATCH')
+                <button type="submit" class="btn btn--primary saas-btn">Mark as Replied</button>
+            </form>
+            @endif
+        </div>
     </div>
-    <div class="hero-actions">
-        <a href="{{ route('admin.messages.index') }}" class="btn btn--ghost">Back to Inbox</a>
-        @if($message->status !== 'replied')
-        <form method="POST" action="{{ route('admin.messages.mark-replied', $message) }}" style="display:inline">
-            @csrf @method('PATCH')
-            <button type="submit" class="btn btn--primary">Mark as Replied</button>
-        </form>
-        @endif
-    </div>
-</section>
 
-<div class="grid">
-    <section class="col-8 card">
-        <div class="card-head">
-            <div class="card-title-wrap">
-                <span class="eyebrow">Message</span>
-                <h2 class="card-title">{{ $message->subject ?: 'No Subject' }}</h2>
-            </div>
-            <span class="badge {{ $message->status === 'new' ? 'danger' : ($message->status === 'replied' ? 'success' : 'info') }}">{{ ucfirst($message->status) }}</span>
+    <div class="saas-layout">
+        <div class="saas-main">
+            <section class="saas-panel">
+                <div class="saas-panel__head">
+                    <div>
+                        <h2 class="saas-panel__title">{{ $message->subject ?: 'No Subject' }}</h2>
+                        <p class="saas-panel__sub">Message body</p>
+                    </div>
+                </div>
+                <div class="saas-panel__body">
+                    <div class="saas-message-body">{{ $message->message }}</div>
+                </div>
+            </section>
         </div>
-        <div style="padding:8px 0;line-height:1.8;color:var(--t-base);font-size:14.5px;white-space:pre-wrap">{{ $message->message }}</div>
-    </section>
-    <section class="col-4 card">
-        <div class="card-head">
-            <div class="card-title-wrap"><span class="eyebrow">Info</span><h2 class="card-title">Contact details</h2></div>
-        </div>
-        <div style="display:flex;flex-direction:column;gap:16px">
-            <div>
-                <div class="eyebrow">Name</div>
-                <div style="font-weight:600;color:var(--t-base);font-size:14.5px">{{ $message->name }}</div>
-            </div>
-            <div>
-                <div class="eyebrow">Email</div>
-                <a href="mailto:{{ $message->email }}" style="color:var(--primary);text-decoration:none;font-size:14px">{{ $message->email }}</a>
-            </div>
-            @if($message->phone)
-            <div>
-                <div class="eyebrow">Phone</div>
-                <div style="color:var(--t-base);font-size:14px">{{ $message->phone }}</div>
-            </div>
-            @endif
-            @if($message->service)
-            <div>
-                <div class="eyebrow">Service</div>
-                <span class="badge info">{{ $message->service->title }}</span>
-            </div>
-            @endif
-            <div>
-                <div class="eyebrow">Received</div>
-                <div style="color:var(--t-base);font-size:14px">{{ $message->created_at->format('F j, Y g:i A') }}</div>
-                <div style="color:var(--t-light);font-size:12px">{{ $message->created_at->diffForHumans() }}</div>
-            </div>
-            @if($message->status === 'read')
-            <div>
-                <form method="POST" action="{{ route('admin.messages.mark-replied', $message) }}">
-                    @csrf @method('PATCH')
-                    <button type="submit" class="btn btn--primary" style="width:100%">Mark as Replied</button>
-                </form>
-            </div>
-            @endif
-        </div>
-    </section>
+
+        <aside class="saas-side">
+            <section class="saas-panel">
+                <div class="saas-panel__head">
+                    <div>
+                        <h2 class="saas-panel__title">Contact details</h2>
+                        <p class="saas-panel__sub">Sender information</p>
+                    </div>
+                </div>
+                <div class="saas-panel__body">
+                    <dl class="saas-meta">
+                        <div>
+                            <dt>Name</dt>
+                            <dd>{{ $message->name }}</dd>
+                        </div>
+                        <div>
+                            <dt>Email</dt>
+                            <dd><a href="mailto:{{ $message->email }}" style="color:var(--primary);text-decoration:none">{{ $message->email }}</a></dd>
+                        </div>
+                        @if($message->phone)
+                        <div>
+                            <dt>Phone</dt>
+                            <dd>{{ $message->phone }}</dd>
+                        </div>
+                        @endif
+                        @if($message->service)
+                        <div>
+                            <dt>Service</dt>
+                            <dd><span class="saas-chip saas-chip--purple">{{ $message->service->title }}</span></dd>
+                        </div>
+                        @endif
+                        <div>
+                            <dt>Received</dt>
+                            <dd>
+                                {{ $message->created_at->format('F j, Y g:i A') }}
+                                <div class="saas-hint">{{ $message->created_at->diffForHumans() }}</div>
+                            </dd>
+                        </div>
+                    </dl>
+                    @if($message->status === 'read')
+                    <form method="POST" action="{{ route('admin.messages.mark-replied', $message) }}">
+                        @csrf @method('PATCH')
+                        <button type="submit" class="btn btn--primary saas-btn saas-btn--block">Mark as Replied</button>
+                    </form>
+                    @endif
+                </div>
+            </section>
+        </aside>
+    </div>
 </div>
 @endsection

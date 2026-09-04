@@ -2,65 +2,243 @@
 
 @section('title', 'Add Team Member')
 @section('crumb', 'Team · Create')
+@section('active', 'team')
 
 @section('content')
-<section class="hero">
-    <div class="hero-text"><span class="eyebrow">Content · Team</span><h1 class="hero-title">Add <span class="accent">team member</span></h1></div>
-    <div class="hero-actions">
-        <a href="{{ route('admin.team.index') }}" class="btn btn--ghost">Cancel</a>
-        <button form="form" type="submit" class="btn btn--primary">Create</button>
-    </div>
-</section>
-<section class="card">
-    <div class="card-head"><div class="card-title-wrap"><span class="eyebrow">Form</span><h2 class="card-title">Member details</h2></div></div>
-    <form id="form" method="POST" action="{{ route('admin.team.store') }}" enctype="multipart/form-data">
-        @csrf
-        <div class="grid">
-            <div class="col-6">
-                <div class="field"><label class="field-label">Name *</label>
-                    <input class="input" type="text" name="name" value="{{ old('name') }}" required>
-                    @error('name')<span style="color:var(--danger);font-size:12px">{{ $message }}</span>@enderror
-                </div>
+@php
+    $isActive = old('is_active', '1') == '1';
+@endphp
+
+<form id="teamForm" class="saas-editor" method="POST" action="{{ route('admin.team.store') }}" enctype="multipart/form-data" novalidate>
+    @csrf
+
+    <header class="saas-toolbar">
+        <div class="saas-toolbar__left">
+            <a href="{{ route('admin.team.index') }}" class="saas-back" aria-label="Back to team">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+            </a>
+            <div class="saas-toolbar__meta">
+                <div class="saas-eyebrow">Team member</div>
+                <h1 class="saas-title" id="liveTitle">New member</h1>
             </div>
-            <div class="col-6">
-                <div class="field"><label class="field-label">Position *</label>
-                    <input class="input" type="text" name="position" value="{{ old('position') }}" required>
-                </div>
-            </div>
-            <div class="col-6">
-                <div class="field"><label class="field-label">Photo</label>
-                    <input class="input" type="file" name="photo" accept="image/*">
-                </div>
-            </div>
-            <div class="col-3">
-                <div class="field"><label class="field-label">Sort Order</label>
-                    <input class="input" type="number" min="0" name="sort_order" value="{{ old('sort_order', 0) }}">
-                </div>
-            </div>
-            <div class="col-3">
-                <div class="field"><label class="field-label">Active</label>
-                    <select class="input" name="is_active">
-                        <option value="1" selected>Active</option>
-                        <option value="0">Inactive</option>
-                    </select>
-                </div>
-            </div>
-            <div class="col-12">
-                <div class="field"><label class="field-label">Bio</label>
-                    <textarea class="input" name="bio" rows="4">{{ old('bio') }}</textarea>
-                </div>
-            </div>
-            <div class="col-12">
-                <div class="field"><label class="field-label">Social Links</label>
-                    <div class="grid">
-                        <div class="col-6"><input class="input" type="url" name="social_links[linkedin]" value="{{ old('social_links.linkedin') }}" placeholder="LinkedIn URL"></div>
-                        <div class="col-6"><input class="input" type="url" name="social_links[twitter]" value="{{ old('social_links.twitter') }}" placeholder="Twitter URL"></div>
-                        <div class="col-6"><input class="input" type="url" name="social_links[github]" value="{{ old('social_links.github') }}" placeholder="GitHub URL"></div>
-                        <div class="col-6"><input class="input" type="url" name="social_links[facebook]" value="{{ old('social_links.facebook') }}" placeholder="Facebook URL"></div>
-                    </div>
-                </div>
+            <span class="saas-status {{ $isActive ? 'is-live' : 'is-draft' }}" id="statusPill">
+                <span class="saas-status__dot"></span>
+                {{ $isActive ? 'Active' : 'Inactive' }}
+            </span>
+        </div>
+        <div class="saas-toolbar__actions">
+            <a href="{{ route('admin.team.index') }}" class="btn btn--ghost saas-btn">Cancel</a>
+            <button type="submit" class="btn btn--primary saas-btn saas-btn--save">
+                <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+                Create
+            </button>
+        </div>
+    </header>
+
+    @if ($errors->any())
+        <div class="saas-alert" role="alert">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+            <div>
+                <strong>Fix {{ $errors->count() }} {{ $errors->count() === 1 ? 'issue' : 'issues' }} before saving</strong>
+                <ul>
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
             </div>
         </div>
-    </form>
-</section>
+    @endif
+
+    <div class="saas-layout">
+        <div class="saas-main">
+            <section class="saas-panel">
+                <div class="saas-panel__head">
+                    <div>
+                        <h2 class="saas-panel__title">Profile</h2>
+                        <p class="saas-panel__sub">Name, role, and how this person appears on the team page.</p>
+                    </div>
+                </div>
+                <div class="saas-panel__body">
+                    <div class="saas-field">
+                        <label class="saas-label" for="name">Name <span class="req">*</span></label>
+                        <input class="saas-input saas-input--lg @error('name') is-invalid @enderror" id="name" type="text" name="name" value="{{ old('name') }}" required autocomplete="name" placeholder="e.g. Alex Rivera">
+                        @error('name')<p class="saas-error">{{ $message }}</p>@enderror
+                    </div>
+
+                    <div class="saas-row saas-row--2">
+                        <div class="saas-field">
+                            <label class="saas-label" for="position">Position <span class="req">*</span></label>
+                            <input class="saas-input @error('position') is-invalid @enderror" id="position" type="text" name="position" value="{{ old('position') }}" required placeholder="e.g. Creative Director">
+                            @error('position')<p class="saas-error">{{ $message }}</p>@enderror
+                        </div>
+                        <div class="saas-field">
+                            <label class="saas-label" for="sort_order">Sort order</label>
+                            <input class="saas-input @error('sort_order') is-invalid @enderror" id="sort_order" type="number" min="0" name="sort_order" value="{{ old('sort_order', 0) }}">
+                            @error('sort_order')<p class="saas-error">{{ $message }}</p>@enderror
+                        </div>
+                    </div>
+
+                    <div class="saas-field">
+                        <label class="saas-label" for="bio">Bio</label>
+                        <textarea class="saas-textarea @error('bio') is-invalid @enderror" id="bio" name="bio" rows="4" placeholder="Short bio shown on the team page">{{ old('bio') }}</textarea>
+                        @error('bio')<p class="saas-error">{{ $message }}</p>@enderror
+                    </div>
+                </div>
+            </section>
+
+            <section class="saas-panel">
+                <div class="saas-panel__head">
+                    <div>
+                        <h2 class="saas-panel__title">Photo</h2>
+                        <p class="saas-panel__sub">Portrait used on team cards and about pages.</p>
+                    </div>
+                </div>
+                <div class="saas-panel__body">
+                    <div class="saas-field">
+                        <label class="saas-label">Headshot</label>
+                        <div class="saas-dropzone" data-dropzone="photo">
+                            <input type="file" name="photo" id="photo" accept="image/*" class="saas-dropzone__input" data-preview="photoPreview">
+                            <div class="saas-dropzone__preview" id="photoPreview">
+                                <div class="saas-dropzone__empty">
+                                    <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg>
+                                    <strong>Drop photo here</strong>
+                                    <span>PNG, JPG, WEBP · up to 5MB</span>
+                                </div>
+                            </div>
+                        </div>
+                        @error('photo')<p class="saas-error">{{ $message }}</p>@enderror
+                    </div>
+                </div>
+            </section>
+
+            <section class="saas-panel">
+                <div class="saas-panel__head">
+                    <div>
+                        <h2 class="saas-panel__title">Social links</h2>
+                        <p class="saas-panel__sub">Optional profile URLs shown on the team card.</p>
+                    </div>
+                </div>
+                <div class="saas-panel__body">
+                    <div class="saas-row saas-row--2">
+                        <div class="saas-field">
+                            <label class="saas-label" for="linkedin">LinkedIn</label>
+                            <input class="saas-input @error('social_links.linkedin') is-invalid @enderror" id="linkedin" type="url" name="social_links[linkedin]" value="{{ old('social_links.linkedin') }}" placeholder="https://linkedin.com/in/...">
+                            @error('social_links.linkedin')<p class="saas-error">{{ $message }}</p>@enderror
+                        </div>
+                        <div class="saas-field">
+                            <label class="saas-label" for="twitter">Twitter</label>
+                            <input class="saas-input @error('social_links.twitter') is-invalid @enderror" id="twitter" type="url" name="social_links[twitter]" value="{{ old('social_links.twitter') }}" placeholder="https://twitter.com/...">
+                            @error('social_links.twitter')<p class="saas-error">{{ $message }}</p>@enderror
+                        </div>
+                        <div class="saas-field">
+                            <label class="saas-label" for="github">GitHub</label>
+                            <input class="saas-input @error('social_links.github') is-invalid @enderror" id="github" type="url" name="social_links[github]" value="{{ old('social_links.github') }}" placeholder="https://github.com/...">
+                            @error('social_links.github')<p class="saas-error">{{ $message }}</p>@enderror
+                        </div>
+                        <div class="saas-field">
+                            <label class="saas-label" for="facebook">Facebook</label>
+                            <input class="saas-input @error('social_links.facebook') is-invalid @enderror" id="facebook" type="url" name="social_links[facebook]" value="{{ old('social_links.facebook') }}" placeholder="https://facebook.com/...">
+                            @error('social_links.facebook')<p class="saas-error">{{ $message }}</p>@enderror
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <aside class="saas-side">
+            <section class="saas-panel saas-panel--side">
+                <div class="saas-panel__head">
+                    <h2 class="saas-panel__title">Visibility</h2>
+                </div>
+                <div class="saas-panel__body saas-panel__body--tight">
+                    <input type="hidden" name="is_active" id="activeValue" value="{{ $isActive ? '1' : '0' }}">
+                    <div class="saas-switch-row">
+                        <div>
+                            <div class="saas-switch-label">Show on website</div>
+                            <div class="saas-switch-hint" id="activeHint">{{ $isActive ? 'Included on the public team page' : 'Hidden from the public site' }}</div>
+                        </div>
+                        <label class="saas-switch">
+                            <input type="checkbox" id="activeToggle" {{ $isActive ? 'checked' : '' }} aria-label="Activate team member">
+                            <span class="saas-switch__track"><span class="saas-switch__thumb"></span></span>
+                        </label>
+                    </div>
+                </div>
+            </section>
+
+            <section class="saas-panel saas-panel--side">
+                <div class="saas-panel__head">
+                    <h2 class="saas-panel__title">Preview</h2>
+                </div>
+                <div class="saas-panel__body saas-panel__body--tight">
+                    <article class="saas-preview-card">
+                        <div class="saas-preview-card__media" id="previewMedia">
+                            <div class="saas-preview-card__placeholder" id="previewInitials">?</div>
+                        </div>
+                        <div class="saas-preview-card__body">
+                            <h3 class="saas-preview-card__title" id="previewName">New member</h3>
+                            <p class="saas-preview-card__client" id="previewPosition">No position set</p>
+                        </div>
+                    </article>
+                </div>
+            </section>
+
+            <button type="submit" class="btn btn--primary saas-btn saas-btn--block">Create</button>
+        </aside>
+    </div>
+</form>
 @endsection
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const nameInput = document.getElementById('name');
+  const positionInput = document.getElementById('position');
+  const activeToggle = document.getElementById('activeToggle');
+  const activeValue = document.getElementById('activeValue');
+  const statusPill = document.getElementById('statusPill');
+  const activeHint = document.getElementById('activeHint');
+  const photoInput = document.getElementById('photo');
+
+  function syncName() {
+    const val = nameInput.value.trim() || 'New member';
+    document.getElementById('liveTitle').textContent = val;
+    document.getElementById('previewName').textContent = val;
+    const initials = document.getElementById('previewInitials');
+    if (initials) initials.textContent = val.slice(0, 2).toUpperCase();
+  }
+
+  function syncPosition() {
+    document.getElementById('previewPosition').textContent = positionInput.value.trim() || 'No position set';
+  }
+
+  function syncActive() {
+    const on = activeToggle.checked;
+    activeValue.value = on ? '1' : '0';
+    statusPill.className = 'saas-status ' + (on ? 'is-live' : 'is-draft');
+    statusPill.innerHTML = '<span class="saas-status__dot"></span>' + (on ? 'Active' : 'Inactive');
+    activeHint.textContent = on ? 'Included on the public team page' : 'Hidden from the public site';
+  }
+
+  nameInput.addEventListener('input', syncName);
+  positionInput.addEventListener('input', syncPosition);
+  activeToggle.addEventListener('change', syncActive);
+  syncName(); syncPosition(); syncActive();
+
+  const zone = photoInput.closest('[data-dropzone]');
+  photoInput.addEventListener('change', function () {
+    const file = (photoInput.files || [])[0];
+    if (!file) return;
+    const url = URL.createObjectURL(file);
+    document.getElementById('photoPreview').innerHTML =
+      '<img class="cover" src="' + url + '" alt="New photo"><div class="saas-dropzone__overlay"><span>Replace photo</span></div>';
+    document.getElementById('previewMedia').innerHTML = '<img src="' + url + '" alt="">';
+  });
+  ['dragenter', 'dragover'].forEach(evt => {
+    zone.addEventListener(evt, e => { e.preventDefault(); zone.classList.add('is-drag'); });
+  });
+  ['dragleave', 'drop'].forEach(evt => {
+    zone.addEventListener(evt, e => { e.preventDefault(); zone.classList.remove('is-drag'); });
+  });
+});
+</script>
+@endpush

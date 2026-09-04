@@ -3,6 +3,38 @@
  * Runs after the 2026 bundle mounts the shell (same DOMContentLoaded queue order).
  */
 (function () {
+  function basePath() {
+    if (typeof window.ADMINATOR_BASE_PATH === 'string') {
+      return window.ADMINATOR_BASE_PATH.replace(/\/$/, '');
+    }
+    var home = (window.ADMINATOR_USER && window.ADMINATOR_USER.homeUrl) || '';
+    try {
+      var path = new URL(home, window.location.origin).pathname.replace(/\/admin\/?$/, '');
+      return path === '/' ? '' : path.replace(/\/$/, '');
+    } catch (e) {
+      return '';
+    }
+  }
+
+  function withBase(href) {
+    if (!href || href === '#' || href.indexOf('javascript:') === 0) return href;
+    if (/^https?:\/\//i.test(href) || href.indexOf('mailto:') === 0) return href;
+    var prefix = basePath();
+    if (!prefix) return href;
+    if (href.indexOf(prefix + '/') === 0 || href === prefix) return href;
+    if (href.charAt(0) === '/') return prefix + href;
+    return href;
+  }
+
+  function patchAdminPaths() {
+    document.querySelectorAll('a[href]').forEach(function (a) {
+      var href = a.getAttribute('href') || '';
+      if (href === '/admin' || href.indexOf('/admin/') === 0) {
+        a.setAttribute('href', withBase(href));
+      }
+    });
+  }
+
   function patchHtmlLinks() {
     var map = window.ADMINATOR_ROUTES || {};
     document.querySelectorAll('a[href$=".html"]').forEach(function (a) {
@@ -43,6 +75,14 @@
     if (profileEmail) profileEmail.textContent = u.email;
     if (topAvatar) topAvatar.textContent = u.initials;
 
+    var brand = document.querySelector('.d-sidebar .brand');
+    if (brand && u.homeUrl) {
+      brand.style.cursor = 'pointer';
+      brand.addEventListener('click', function () {
+        window.location.href = u.homeUrl;
+      });
+    }
+
     document.querySelectorAll('.dd-profile a.dd-menu-item').forEach(function (a) {
       var text = (a.textContent || '').trim();
       if (text === 'Settings' && u.settingsUrl) a.setAttribute('href', u.settingsUrl);
@@ -72,6 +112,7 @@
     // Shell mounts in the 2026 bundle's DOMContentLoaded handler, registered first.
     // Defer one tick so mountShell has painted the chrome.
     setTimeout(function () {
+      patchAdminPaths();
       patchNavHrefs();
       patchHtmlLinks();
       personalizeShell();

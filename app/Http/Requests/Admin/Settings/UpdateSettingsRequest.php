@@ -40,7 +40,7 @@ class UpdateSettingsRequest extends FormRequest
             'home.hero_subheading' => ['nullable', 'string', 'max:1000'],
             'home.hero_image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp,gif', 'max:5120'],
             'home.cta_text' => ['nullable', 'string', 'max:255'],
-            'home.cta_link' => ['nullable', 'url', 'max:255'],
+            'home.cta_link' => ['nullable', 'string', 'max:255'],
             // Footer
             'footer.copyright' => ['nullable', 'string', 'max:500'],
             'footer.quick_links' => ['nullable', 'string', 'max:4000'],

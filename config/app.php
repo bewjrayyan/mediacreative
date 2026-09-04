@@ -17,6 +17,18 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Application Version
+    |--------------------------------------------------------------------------
+    |
+    | Semver string for the MediaCreative CMS release. Prefer the VERSION file
+    | at the project root so deploy/update UIs stay in sync with git tags.
+    |
+    */
+
+    'version' => env('APP_VERSION', trim(@file_get_contents(base_path('VERSION')) ?: '0.0.0')),
+
+    /*
+    |--------------------------------------------------------------------------
     | Application Environment
     |--------------------------------------------------------------------------
     |

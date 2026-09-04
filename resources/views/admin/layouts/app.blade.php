@@ -20,6 +20,7 @@
       })();
     </script>
     <link rel="stylesheet" href="{{ asset('adminator/css/adminator.css') }}" fetchpriority="high">
+    <link rel="stylesheet" href="{{ asset('adminator/css/saas-admin.css') }}">
     <style>
         .flash { position: fixed; top: 80px; right: 24px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; }
         .flash-alert { display: flex; align-items: flex-start; gap: 10px; padding: 14px 18px; border-radius: 10px; font-size: 14px; box-shadow: var(--shadow-lg); max-width: 380px; background: var(--bg-card); border: 1px solid var(--border); }
@@ -84,6 +85,7 @@
             ->implode('');
     @endphp
     <script>
+      window.ADMINATOR_BASE_PATH = @json(rtrim(parse_url(url('/'), PHP_URL_PATH) ?: '', '/'));
       window.ADMINATOR_USER = {
         name: @json($adminName),
         email: @json(auth()->user()->email ?? 'john@adminator.app'),

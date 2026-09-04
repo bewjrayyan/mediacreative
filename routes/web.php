@@ -10,6 +10,7 @@ use App\Http\Controllers\Admin\PostController as AdminPostController;
 use App\Http\Controllers\Admin\ProjectController as AdminProjectController;
 use App\Http\Controllers\Admin\ServiceController as AdminServiceController;
 use App\Http\Controllers\Admin\SettingsController;
+use App\Http\Controllers\Admin\SystemUpdateController;
 use App\Http\Controllers\Admin\TeamMemberController;
 use App\Http\Controllers\Admin\TestimonialController;
 use App\Http\Controllers\Admin\UserController;
@@ -103,7 +104,9 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::patch('testimonials/{testimonial}/toggle', [TestimonialController::class, 'toggle'])->name('testimonials.toggle');
 
         // Team Members
-        Route::resource('team', TeamMemberController::class)->except('show');
+        Route::resource('team', TeamMemberController::class)
+            ->except('show')
+            ->parameters(['team' => 'teamMember']);
         Route::patch('team/{teamMember}/toggle', [TeamMemberController::class, 'toggle'])->name('team.toggle');
 
         // Blog Posts
@@ -123,6 +126,12 @@ Route::prefix('admin')->name('admin.')->group(function () {
         // Settings
         Route::get('settings', [SettingsController::class, 'index'])->name('settings.index');
         Route::post('settings', [SettingsController::class, 'update'])->name('settings.update');
+
+        // System updates (admin only — enforced in controller)
+        Route::get('settings/updates/status', [SystemUpdateController::class, 'status'])->name('settings.updates.status');
+        Route::post('settings/updates/check', [SystemUpdateController::class, 'check'])->name('settings.updates.check');
+        Route::post('settings/updates/pull', [SystemUpdateController::class, 'pull'])->name('settings.updates.pull');
+        Route::post('settings/updates/maintenance', [SystemUpdateController::class, 'maintenance'])->name('settings.updates.maintenance');
 
         // CMS Pages
         Route::resource('pages', AdminPageController::class)->except('show');
