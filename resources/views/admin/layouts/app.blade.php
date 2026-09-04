@@ -83,6 +83,11 @@
             ->map(fn ($part) => mb_strtoupper(mb_substr($part, 0, 1)))
             ->take(2)
             ->implode('');
+        $adminSiteName = setting('site_name', config('app.name', 'Adminator'));
+        $adminCopyright = setting(
+            'copyright',
+            '© ' . date('Y') . ' ' . $adminSiteName . '. All rights reserved.'
+        );
     @endphp
     <script>
       window.ADMINATOR_BASE_PATH = @json(rtrim(parse_url(url('/'), PHP_URL_PATH) ?: '', '/'));
@@ -95,6 +100,9 @@
         messagesUrl: @json(route('admin.messages.index')),
         homeUrl: @json(route('admin.dashboard')),
         frontendUrl: @json(url('/')),
+        siteName: @json($adminSiteName),
+        copyright: @json($adminCopyright),
+        appVersion: @json(config('app.version')),
       };
       window.ADMINATOR_ROUTES = {
         'index.html': @json(url('/admin')),

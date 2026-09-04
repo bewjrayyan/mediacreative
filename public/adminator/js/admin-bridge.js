@@ -84,6 +84,35 @@
     }
   }
 
+  function escapeHtml(str) {
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+
+  function patchFooter() {
+    var u = window.ADMINATOR_USER;
+    var footer = document.querySelector('.d-footer');
+    if (!footer || !u) return;
+
+    var copyrightEl = footer.querySelector(':scope > div:not(.d-footer-meta)');
+    if (copyrightEl && u.copyright) {
+      copyrightEl.textContent = u.copyright;
+    }
+
+    var meta = footer.querySelector('.d-footer-meta');
+    if (meta) {
+      var version = u.appVersion ? 'v' + String(u.appVersion).replace(/^v/i, '') : '';
+      var site = u.siteName || '';
+      meta.innerHTML =
+        (version ? '<span>' + escapeHtml(version) + '</span>' : '') +
+        (site ? '<span>' + escapeHtml(site) + '</span>' : '');
+    }
+  }
+
   function personalizeShell() {
     var u = window.ADMINATOR_USER;
     if (!u) return;
@@ -123,6 +152,8 @@
         });
       }
     });
+
+    patchFooter();
   }
 
   function dismissFlash() {

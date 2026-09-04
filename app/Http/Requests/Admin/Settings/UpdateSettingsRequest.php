@@ -41,9 +41,9 @@ class UpdateSettingsRequest extends FormRequest
             'home.hero_image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp,gif', 'max:5120'],
             'home.cta_text' => ['nullable', 'string', 'max:255'],
             'home.cta_link' => ['nullable', 'string', 'max:255'],
-            // Footer
-            'footer.copyright' => ['nullable', 'string', 'max:500'],
-            'footer.quick_links' => ['nullable', 'string', 'max:4000'],
+            // Footer (flat keys matching the settings form + PageSetting rows)
+            'copyright' => ['nullable', 'string', 'max:500'],
+            'quick_links' => ['nullable', 'string', 'max:4000'],
         ];
     }
 }

@@ -378,7 +378,7 @@
                 </div>
             </div>
             <div class="footer-bottom">
-                <span>{!! setting('footer.copyright', '© ' . date('Y') . ' ' . setting('site_name', 'DesignPro') . '. All rights reserved.') !!}</span>
+                <span>{!! setting('copyright', '© ' . date('Y') . ' ' . setting('site_name', 'DesignPro') . '. All rights reserved.') !!}</span>
                 <span>Designed &amp; developed by {{ setting('site_name', 'DesignPro') }}</span>
             </div>
         </div>

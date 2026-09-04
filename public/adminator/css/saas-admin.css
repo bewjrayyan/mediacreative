@@ -92,7 +92,6 @@ html, body { height: 100%; }
   .saas-editor.saas-settings { margin: 0 12px 16px; }
 }
 .saas-toolbar {
-  position: sticky; top: 0; z-index: 40;
   display: flex; align-items: center; justify-content: space-between; gap: 16px;
   padding: 14px 16px; margin: -8px 0 20px;
   background: color-mix(in srgb, var(--bg-card) 88%, transparent);
