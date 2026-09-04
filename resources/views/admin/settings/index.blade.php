@@ -7,275 +7,493 @@
 @section('content')
 @php
     $allSettings = \App\Models\PageSetting::all()->pluck('value', 'key')->toArray();
-    $groups = [
-        'general' => ['site_name', 'tagline', 'site_description', 'logo', 'favicon'],
-        'contact' => ['email', 'phone', 'address', 'map_embed'],
-        'social' => ['facebook', 'instagram', 'linkedin', 'twitter', 'github'],
-        'seo' => ['meta_title', 'meta_description', 'keywords', 'og_image'],
-        'home' => ['hero_heading', 'hero_subheading', 'hero_image', 'cta_text', 'cta_link'],
-        'footer' => ['copyright', 'quick_links'],
+    $siteName = old('site_name', $allSettings['site_name'] ?? 'DesignPro');
+    $tabs = [
+        'general' => ['label' => 'General', 'hint' => 'Brand & identity'],
+        'contact' => ['label' => 'Contact', 'hint' => 'Reach details'],
+        'social' => ['label' => 'Social', 'hint' => 'Profile links'],
+        'seo' => ['label' => 'SEO', 'hint' => 'Search & share'],
+        'home' => ['label' => 'Homepage', 'hint' => 'Hero & CTA'],
+        'footer' => ['label' => 'Footer', 'hint' => 'Copyright & links'],
+        'updates' => ['label' => 'Updates', 'hint' => 'GitHub deploy'],
     ];
     $activeTab = request('tab', 'general');
+    if (! array_key_exists($activeTab, $tabs)) {
+        $activeTab = 'general';
+    }
 @endphp
 
-<div class="saas-editor">
-    <div class="saas-list-head">
-        <div>
-            <div class="saas-eyebrow">System</div>
-            <h1 class="saas-list-head__title">Site settings</h1>
-            <p class="saas-list-head__sub">Configure general info, contact details, social links, SEO, homepage, footer, and system updates.</p>
+<div class="saas-editor saas-settings">
+    <header class="saas-toolbar">
+        <div class="saas-toolbar__left">
+            <div class="saas-toolbar__meta">
+                <div class="saas-eyebrow">System</div>
+                <h1 class="saas-title" id="liveSettingsTitle">{{ $siteName }}</h1>
+            </div>
+            <span class="saas-status is-live" id="settingsTabPill">
+                <span class="saas-status__dot"></span>
+                <span id="settingsTabPillText">{{ $tabs[$activeTab]['label'] }}</span>
+            </span>
+        </div>
+        <div class="saas-toolbar__actions" id="settingsSaveBar" @if($activeTab === 'updates') style="display:none" @endif>
+            <button type="submit" form="settingsForm" class="btn btn--primary saas-btn saas-btn--save">
+                <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><path d="M17 21v-8H7v8M7 3v5h8"/></svg>
+                Save settings
+            </button>
+        </div>
+    </header>
+
+    @if ($errors->any())
+        <div class="saas-alert" role="alert">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+            <div>
+                <strong>Fix {{ $errors->count() }} {{ $errors->count() === 1 ? 'issue' : 'issues' }} before saving</strong>
+                <ul>
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        </div>
+    @endif
+
+    <div class="saas-layout">
+        <aside class="saas-side">
+            <section class="saas-panel saas-panel--side">
+                <div class="saas-panel__head">
+                    <h2 class="saas-panel__title">Sections</h2>
+                </div>
+                <nav class="saas-settings-nav" aria-label="Settings sections">
+                    @foreach($tabs as $key => $meta)
+                        <button type="button"
+                            class="saas-settings-nav__item {{ $activeTab === $key ? 'is-active' : '' }}"
+                            data-tab="{{ $key }}">
+                            <span class="saas-settings-nav__label">{{ $meta['label'] }}</span>
+                            <span class="saas-settings-nav__hint">{{ $meta['hint'] }}</span>
+                        </button>
+                    @endforeach
+                </nav>
+            </section>
+
+            <section class="saas-panel saas-panel--side" data-settings-preview @if($activeTab !== 'general') style="display:none" @endif>
+                <div class="saas-panel__head">
+                    <h2 class="saas-panel__title">Preview</h2>
+                </div>
+                <div class="saas-panel__body saas-panel__body--tight">
+                    <div class="saas-settings-preview">
+                        <div class="saas-settings-preview__logo" id="previewLogo">
+                            @if(!empty($allSettings['logo']))
+                                <img src="{{ asset('storage/' . $allSettings['logo']) }}" alt="Logo">
+                            @else
+                                <span class="saas-settings-preview__mark">{{ strtoupper(mb_substr($siteName, 0, 1)) }}</span>
+                            @endif
+                        </div>
+                        <div class="saas-settings-preview__name" id="previewName">{{ $siteName }}</div>
+                        <div class="saas-settings-preview__tag" id="previewTagline">{{ old('tagline', $allSettings['tagline'] ?? 'Site tagline') }}</div>
+                    </div>
+                    <p class="saas-help">Live preview of brand identity on the public site.</p>
+                </div>
+            </section>
+        </aside>
+
+        <div class="saas-main">
+            <form method="POST" action="{{ route('admin.settings.update') }}" enctype="multipart/form-data" id="settingsForm" novalidate>
+                @csrf
+
+                {{-- General --}}
+                <div class="tab-panel" data-panel="general" @if($activeTab !== 'general') style="display:none" @endif>
+                    <section class="saas-panel">
+                        <div class="saas-panel__head">
+                            <div>
+                                <h2 class="saas-panel__title">Brand identity</h2>
+                                <p class="saas-panel__sub">Site name, tagline, and short description shown across the website.</p>
+                            </div>
+                        </div>
+                        <div class="saas-panel__body">
+                            <div class="saas-field">
+                                <label class="saas-label" for="site_name">Site name <span class="req">*</span></label>
+                                <input class="saas-input saas-input--lg" id="site_name" type="text" name="site_name" value="{{ $siteName }}" required autocomplete="organization" placeholder="e.g. Media Creative">
+                            </div>
+                            <div class="saas-field">
+                                <label class="saas-label" for="tagline">Tagline</label>
+                                <input class="saas-input" id="tagline" type="text" name="tagline" value="{{ old('tagline', $allSettings['tagline'] ?? '') }}" placeholder="One-line brand promise">
+                            </div>
+                            <div class="saas-field">
+                                <label class="saas-label" for="site_description">Site description</label>
+                                <textarea class="saas-textarea" id="site_description" name="site_description" rows="4" placeholder="Short overview for footers and about snippets">{{ old('site_description', $allSettings['site_description'] ?? '') }}</textarea>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="saas-panel" style="margin-top:20px">
+                        <div class="saas-panel__head">
+                            <div>
+                                <h2 class="saas-panel__title">Logo &amp; favicon</h2>
+                                <p class="saas-panel__sub">Upload brand marks used in the header, emails, and browser tab.</p>
+                            </div>
+                        </div>
+                        <div class="saas-panel__body">
+                            <div class="saas-row saas-row--2">
+                                <div class="saas-field">
+                                    <label class="saas-label" for="logo">Logo</label>
+                                    <div class="saas-dropzone saas-dropzone--logo" data-dropzone="logo">
+                                        <input type="file" name="logo" id="logo" accept="image/*" class="saas-dropzone__input" data-preview="logoPreview">
+                                        <div class="saas-dropzone__preview saas-dropzone__preview--logo" id="logoPreview">
+                                            @if(!empty($allSettings['logo']))
+                                                <div class="saas-logo-frame"><img src="{{ asset('storage/' . $allSettings['logo']) }}" alt="Current logo"></div>
+                                                <div class="saas-dropzone__overlay"><span>Replace logo</span></div>
+                                            @else
+                                                <div class="saas-dropzone__empty">
+                                                    <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg>
+                                                    <strong>Drop logo here</strong>
+                                                    <span>PNG, SVG, WEBP · up to 5MB</span>
+                                                </div>
+                                            @endif
+                                        </div>
+                                    </div>
+                                    <p class="saas-help">Transparent PNG or SVG works best on light and dark headers.</p>
+                                </div>
+                                <div class="saas-field">
+                                    <label class="saas-label" for="favicon">Favicon</label>
+                                    <div class="saas-dropzone" data-dropzone="favicon">
+                                        <input type="file" name="favicon" id="favicon" accept="image/*" class="saas-dropzone__input">
+                                        <div class="saas-dropzone__preview" id="faviconPreview" style="min-height:160px;display:grid;place-items:center;padding:24px">
+                                            @if(!empty($allSettings['favicon']))
+                                                <img src="{{ asset('storage/' . $allSettings['favicon']) }}" alt="Favicon" style="width:48px;height:48px;object-fit:contain;border-radius:8px">
+                                                <div class="saas-dropzone__overlay"><span>Replace</span></div>
+                                            @else
+                                                <div class="saas-dropzone__empty">
+                                                    <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z"/></svg>
+                                                    <strong>Drop favicon</strong>
+                                                    <span>ICO / PNG · 32×32 or 64×64</span>
+                                                </div>
+                                            @endif
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+
+                {{-- Contact --}}
+                <div class="tab-panel" data-panel="contact" @if($activeTab !== 'contact') style="display:none" @endif>
+                    <section class="saas-panel">
+                        <div class="saas-panel__head">
+                            <div>
+                                <h2 class="saas-panel__title">Contact details</h2>
+                                <p class="saas-panel__sub">Shown on the contact page, footer, and inquiry forms.</p>
+                            </div>
+                        </div>
+                        <div class="saas-panel__body">
+                            <div class="saas-row saas-row--2">
+                                <div class="saas-field">
+                                    <label class="saas-label" for="email">Contact email</label>
+                                    <input class="saas-input" id="email" type="email" name="email" value="{{ old('email', $allSettings['email'] ?? '') }}" placeholder="hello@example.com">
+                                </div>
+                                <div class="saas-field">
+                                    <label class="saas-label" for="phone">Phone</label>
+                                    <input class="saas-input" id="phone" type="text" name="phone" value="{{ old('phone', $allSettings['phone'] ?? '') }}" placeholder="+60 …">
+                                </div>
+                            </div>
+                            <div class="saas-field">
+                                <label class="saas-label" for="address">Address</label>
+                                <textarea class="saas-textarea" id="address" name="address" rows="3">{{ old('address', $allSettings['address'] ?? '') }}</textarea>
+                            </div>
+                            <div class="saas-field">
+                                <label class="saas-label" for="map_embed">Google Maps embed URL</label>
+                                <textarea class="saas-textarea saas-textarea--mono" id="map_embed" name="map_embed" rows="3" style="min-height:auto">{{ old('map_embed', $allSettings['map_embed'] ?? '') }}</textarea>
+                                <p class="saas-help">Paste the embed <code>src</code> from Google Maps (Share → Embed a map).</p>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+
+                {{-- Social --}}
+                <div class="tab-panel" data-panel="social" @if($activeTab !== 'social') style="display:none" @endif>
+                    <section class="saas-panel">
+                        <div class="saas-panel__head">
+                            <div>
+                                <h2 class="saas-panel__title">Social profiles</h2>
+                                <p class="saas-panel__sub">Full profile URLs for footer and contact modules.</p>
+                            </div>
+                        </div>
+                        <div class="saas-panel__body">
+                            <div class="saas-row saas-row--2">
+                                <div class="saas-field">
+                                    <label class="saas-label" for="facebook">Facebook</label>
+                                    <input class="saas-input" id="facebook" type="url" name="facebook" value="{{ old('facebook', $allSettings['facebook'] ?? '') }}" placeholder="https://facebook.com/...">
+                                </div>
+                                <div class="saas-field">
+                                    <label class="saas-label" for="instagram">Instagram</label>
+                                    <input class="saas-input" id="instagram" type="url" name="instagram" value="{{ old('instagram', $allSettings['instagram'] ?? '') }}" placeholder="https://instagram.com/...">
+                                </div>
+                                <div class="saas-field">
+                                    <label class="saas-label" for="linkedin">LinkedIn</label>
+                                    <input class="saas-input" id="linkedin" type="url" name="linkedin" value="{{ old('linkedin', $allSettings['linkedin'] ?? '') }}" placeholder="https://linkedin.com/...">
+                                </div>
+                                <div class="saas-field">
+                                    <label class="saas-label" for="twitter">X / Twitter</label>
+                                    <input class="saas-input" id="twitter" type="url" name="twitter" value="{{ old('twitter', $allSettings['twitter'] ?? '') }}" placeholder="https://twitter.com/...">
+                                </div>
+                                <div class="saas-field">
+                                    <label class="saas-label" for="github">GitHub</label>
+                                    <input class="saas-input" id="github" type="url" name="github" value="{{ old('github', $allSettings['github'] ?? '') }}" placeholder="https://github.com/...">
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+
+                {{-- SEO --}}
+                <div class="tab-panel" data-panel="seo" @if($activeTab !== 'seo') style="display:none" @endif>
+                    <section class="saas-panel">
+                        <div class="saas-panel__head">
+                            <div>
+                                <h2 class="saas-panel__title">Default SEO</h2>
+                                <p class="saas-panel__sub">Fallbacks for pages without custom meta tags.</p>
+                            </div>
+                        </div>
+                        <div class="saas-panel__body">
+                            <div class="saas-field">
+                                <label class="saas-label" for="meta_title">Meta title</label>
+                                <input class="saas-input" id="meta_title" type="text" name="meta_title" value="{{ old('meta_title', $allSettings['meta_title'] ?? '') }}">
+                            </div>
+                            <div class="saas-field">
+                                <label class="saas-label" for="meta_description">Meta description</label>
+                                <textarea class="saas-textarea" id="meta_description" name="meta_description" rows="3">{{ old('meta_description', $allSettings['meta_description'] ?? '') }}</textarea>
+                            </div>
+                            <div class="saas-field">
+                                <label class="saas-label" for="keywords">Keywords</label>
+                                <input class="saas-input" id="keywords" type="text" name="keywords" value="{{ old('keywords', $allSettings['keywords'] ?? '') }}" placeholder="design, agency, branding">
+                                <p class="saas-help">Comma-separated keywords.</p>
+                            </div>
+                            <div class="saas-field">
+                                <label class="saas-label" for="og_image">OG image</label>
+                                <div class="saas-dropzone" data-dropzone="og_image">
+                                    <input type="file" name="og_image" id="og_image" accept="image/*" class="saas-dropzone__input">
+                                    <div class="saas-dropzone__preview" id="ogPreview" style="min-height:180px;display:grid;place-items:center">
+                                        @if(!empty($allSettings['og_image']))
+                                            <img src="{{ asset('storage/' . $allSettings['og_image']) }}" alt="OG" style="max-width:100%;max-height:200px;object-fit:cover;border-radius:8px">
+                                            <div class="saas-dropzone__overlay"><span>Replace image</span></div>
+                                        @else
+                                            <div class="saas-dropzone__empty">
+                                                <strong>Drop Open Graph image</strong>
+                                                <span>Recommended 1200×630</span>
+                                            </div>
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+
+                {{-- Homepage --}}
+                <div class="tab-panel" data-panel="home" @if($activeTab !== 'home') style="display:none" @endif>
+                    <section class="saas-panel">
+                        <div class="saas-panel__head">
+                            <div>
+                                <h2 class="saas-panel__title">Hero section</h2>
+                                <p class="saas-panel__sub">Primary message and call-to-action on the homepage.</p>
+                            </div>
+                        </div>
+                        <div class="saas-panel__body">
+                            <div class="saas-field">
+                                <label class="saas-label" for="hero_heading">Hero heading</label>
+                                <input class="saas-input saas-input--lg" id="hero_heading" type="text" name="hero_heading" value="{{ old('hero_heading', $allSettings['hero_heading'] ?? '') }}">
+                            </div>
+                            <div class="saas-field">
+                                <label class="saas-label" for="hero_subheading">Hero subheading</label>
+                                <textarea class="saas-textarea" id="hero_subheading" name="hero_subheading" rows="3">{{ old('hero_subheading', $allSettings['hero_subheading'] ?? '') }}</textarea>
+                            </div>
+                            <div class="saas-field">
+                                <label class="saas-label" for="hero_image">Hero image</label>
+                                <div class="saas-dropzone" data-dropzone="hero_image">
+                                    <input type="file" name="hero_image" id="hero_image" accept="image/*" class="saas-dropzone__input">
+                                    <div class="saas-dropzone__preview" id="heroPreview" style="min-height:200px;display:grid;place-items:center">
+                                        @if(!empty($allSettings['hero_image']))
+                                            <img src="{{ asset('storage/' . $allSettings['hero_image']) }}" alt="Hero" style="max-width:100%;max-height:240px;object-fit:cover;border-radius:8px">
+                                            <div class="saas-dropzone__overlay"><span>Replace image</span></div>
+                                        @else
+                                            <div class="saas-dropzone__empty">
+                                                <strong>Drop hero image</strong>
+                                                <span>Wide landscape works best</span>
+                                            </div>
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="saas-row saas-row--2">
+                                <div class="saas-field">
+                                    <label class="saas-label" for="cta_text">CTA text</label>
+                                    <input class="saas-input" id="cta_text" type="text" name="cta_text" value="{{ old('cta_text', $allSettings['cta_text'] ?? '') }}">
+                                </div>
+                                <div class="saas-field">
+                                    <label class="saas-label" for="cta_link">CTA link</label>
+                                    <input class="saas-input" id="cta_link" type="text" name="cta_link" value="{{ old('cta_link', $allSettings['cta_link'] ?? '') }}" placeholder="/contact or https://…">
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+
+                {{-- Footer --}}
+                <div class="tab-panel" data-panel="footer" @if($activeTab !== 'footer') style="display:none" @endif>
+                    <section class="saas-panel">
+                        <div class="saas-panel__head">
+                            <div>
+                                <h2 class="saas-panel__title">Footer</h2>
+                                <p class="saas-panel__sub">Copyright line and quick navigation links.</p>
+                            </div>
+                        </div>
+                        <div class="saas-panel__body">
+                            <div class="saas-field">
+                                <label class="saas-label" for="copyright">Copyright text</label>
+                                <input class="saas-input" id="copyright" type="text" name="copyright" value="{{ old('copyright', $allSettings['copyright'] ?? '') }}">
+                            </div>
+                            <div class="saas-field">
+                                <label class="saas-label" for="quick_links">Quick links (JSON)</label>
+                                <textarea class="saas-textarea saas-textarea--mono" id="quick_links" name="quick_links" rows="6" style="min-height:auto">{{ old('quick_links', $allSettings['quick_links'] ?? '{"Services":"/services","Portfolio":"/portfolio","About":"/about","Blog":"/blog","Contact":"/contact"}') }}</textarea>
+                                <p class="saas-help">Object map of <code>label → url</code>, e.g. <code>{"Services":"/services"}</code>.</p>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </form>
+
+            {{-- Updates --}}
+            <div class="tab-panel" data-panel="updates" @if($activeTab !== 'updates') style="display:none" @endif>
+                <section class="saas-panel">
+                    <div class="saas-panel__head">
+                        <div>
+                            <h2 class="saas-panel__title">System updates</h2>
+                            <p class="saas-panel__sub">Check GitHub releases, pull the latest code, and run standard Artisan maintenance.</p>
+                        </div>
+                    </div>
+                    <div class="saas-panel__body">
+                        <div class="saas-row saas-row--2">
+                            <div class="saas-field">
+                                <div class="saas-eyebrow">Installed</div>
+                                <div class="saas-update-card">
+                                    <div class="saas-update-card__title" id="updateLocalBranch">Loading…</div>
+                                    <div class="saas-update-card__meta" id="updateLocalMeta">—</div>
+                                    <div class="saas-update-card__msg" id="updateLocalMsg"></div>
+                                </div>
+                            </div>
+                            <div class="saas-field">
+                                <div class="saas-eyebrow">GitHub release</div>
+                                <div class="saas-update-card">
+                                    <div class="saas-update-card__title" id="updateReleaseTitle">Loading…</div>
+                                    <div class="saas-update-card__meta" id="updateReleaseMeta">—</div>
+                                    <div class="saas-update-card__msg" id="updateReleaseBody"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="saas-update-status" id="updateSyncStatus">Checking sync status…</div>
+
+                        <div class="saas-update-actions">
+                            <button type="button" class="btn btn--ghost saas-btn" id="btnUpdateCheck">Check for updates</button>
+                            <button type="button" class="btn btn--primary saas-btn" id="btnUpdatePull">Pull latest + Artisan</button>
+                            <button type="button" class="btn btn--ghost saas-btn" id="btnUpdateMaintain">Run Artisan only</button>
+                        </div>
+
+                        <p class="saas-help">
+                            Pull uses <code>git pull --ff-only</code>, then migrate (optional), cache clears, and <code>storage:link</code>. Admin only.
+                        </p>
+
+                        <div class="saas-field">
+                            <label class="saas-label">Command output</label>
+                            <pre class="saas-update-console" id="updateConsole">Ready.</pre>
+                        </div>
+                    </div>
+                </section>
+            </div>
         </div>
     </div>
-
-    <section class="saas-panel">
-        <div class="saas-tabs">
-            @foreach($groups as $group => $keys)
-            <button type="button" class="saas-tab {{ $activeTab === $group ? 'is-active' : '' }}" data-tab="{{ $group }}">
-                {{ ucfirst($group) }}
-            </button>
-            @endforeach
-            <button type="button" class="saas-tab {{ $activeTab === 'updates' ? 'is-active' : '' }}" data-tab="updates">
-                Updates
-            </button>
-        </div>
-
-        <form method="POST" action="{{ route('admin.settings.update') }}" enctype="multipart/form-data" id="settingsForm">
-            @csrf
-
-            {{-- General --}}
-            <div class="tab-panel saas-panel__body" data-panel="general" @if($activeTab !== 'general') style="display:none" @endif>
-                <div class="saas-row saas-row--2">
-                    <div class="saas-field">
-                        <label class="saas-label">Site Name</label>
-                        <input class="saas-input" type="text" name="site_name" value="{{ $allSettings['site_name'] ?? 'DesignPro' }}">
-                    </div>
-                    <div class="saas-field">
-                        <label class="saas-label">Tagline</label>
-                        <input class="saas-input" type="text" name="tagline" value="{{ $allSettings['tagline'] ?? '' }}">
-                    </div>
-                </div>
-                <div class="saas-field">
-                    <label class="saas-label">Site Description</label>
-                    <textarea class="saas-textarea" name="site_description" rows="3">{{ $allSettings['site_description'] ?? '' }}</textarea>
-                </div>
-                <div class="saas-row saas-row--2">
-                    <div class="saas-field">
-                        <label class="saas-label">Logo</label>
-                        <input class="saas-input" type="file" name="logo" accept="image/*">
-                        @if(!empty($allSettings['logo']))
-                            <img src="{{ asset('storage/' . $allSettings['logo']) }}" alt="" style="width:120px;margin-top:8px;background:#fff;border-radius:8px;padding:4px">
-                        @endif
-                    </div>
-                    <div class="saas-field">
-                        <label class="saas-label">Favicon</label>
-                        <input class="saas-input" type="file" name="favicon" accept="image/*">
-                        @if(!empty($allSettings['favicon']))
-                            <img src="{{ asset('storage/' . $allSettings['favicon']) }}" alt="" style="width:32px;margin-top:8px">
-                        @endif
-                    </div>
-                </div>
-            </div>
-
-            {{-- Contact --}}
-            <div class="tab-panel saas-panel__body" data-panel="contact" @if($activeTab !== 'contact') style="display:none" @endif>
-                <div class="saas-row saas-row--2">
-                    <div class="saas-field">
-                        <label class="saas-label">Contact Email</label>
-                        <input class="saas-input" type="email" name="email" value="{{ $allSettings['email'] ?? '' }}">
-                    </div>
-                    <div class="saas-field">
-                        <label class="saas-label">Phone</label>
-                        <input class="saas-input" type="text" name="phone" value="{{ $allSettings['phone'] ?? '' }}">
-                    </div>
-                </div>
-                <div class="saas-field">
-                    <label class="saas-label">Address</label>
-                    <textarea class="saas-textarea" name="address" rows="2">{{ $allSettings['address'] ?? '' }}</textarea>
-                </div>
-                <div class="saas-field">
-                    <label class="saas-label">Google Maps Embed URL</label>
-                    <textarea class="saas-textarea saas-textarea--mono" name="map_embed" rows="3" style="min-height:auto">{{ $allSettings['map_embed'] ?? '' }}</textarea>
-                    <p class="saas-help">Paste the embed src URL from Google Maps (share → embed → copy the src value).</p>
-                </div>
-            </div>
-
-            {{-- Social --}}
-            <div class="tab-panel saas-panel__body" data-panel="social" @if($activeTab !== 'social') style="display:none" @endif>
-                <div class="saas-row saas-row--2">
-                    <div class="saas-field">
-                        <label class="saas-label">Facebook</label>
-                        <input class="saas-input" type="url" name="facebook" value="{{ $allSettings['facebook'] ?? '' }}" placeholder="https://facebook.com/...">
-                    </div>
-                    <div class="saas-field">
-                        <label class="saas-label">Instagram</label>
-                        <input class="saas-input" type="url" name="instagram" value="{{ $allSettings['instagram'] ?? '' }}" placeholder="https://instagram.com/...">
-                    </div>
-                    <div class="saas-field">
-                        <label class="saas-label">LinkedIn</label>
-                        <input class="saas-input" type="url" name="linkedin" value="{{ $allSettings['linkedin'] ?? '' }}" placeholder="https://linkedin.com/...">
-                    </div>
-                    <div class="saas-field">
-                        <label class="saas-label">X / Twitter</label>
-                        <input class="saas-input" type="url" name="twitter" value="{{ $allSettings['twitter'] ?? '' }}" placeholder="https://twitter.com/...">
-                    </div>
-                    <div class="saas-field">
-                        <label class="saas-label">GitHub</label>
-                        <input class="saas-input" type="url" name="github" value="{{ $allSettings['github'] ?? '' }}" placeholder="https://github.com/...">
-                    </div>
-                </div>
-            </div>
-
-            {{-- SEO --}}
-            <div class="tab-panel saas-panel__body" data-panel="seo" @if($activeTab !== 'seo') style="display:none" @endif>
-                <div class="saas-field">
-                    <label class="saas-label">Default Meta Title</label>
-                    <input class="saas-input" type="text" name="meta_title" value="{{ $allSettings['meta_title'] ?? '' }}">
-                </div>
-                <div class="saas-field">
-                    <label class="saas-label">Meta Description</label>
-                    <textarea class="saas-textarea" name="meta_description" rows="3">{{ $allSettings['meta_description'] ?? '' }}</textarea>
-                </div>
-                <div class="saas-field">
-                    <label class="saas-label">Keywords (comma separated)</label>
-                    <input class="saas-input" type="text" name="keywords" value="{{ $allSettings['keywords'] ?? '' }}">
-                </div>
-                <div class="saas-field">
-                    <label class="saas-label">OG Image</label>
-                    <input class="saas-input" type="file" name="og_image" accept="image/*">
-                    @if(!empty($allSettings['og_image']))
-                        <img src="{{ asset('storage/' . $allSettings['og_image']) }}" alt="" style="width:160px;margin-top:8px;border-radius:8px">
-                    @endif
-                </div>
-            </div>
-
-            {{-- Homepage --}}
-            <div class="tab-panel saas-panel__body" data-panel="home" @if($activeTab !== 'home') style="display:none" @endif>
-                <div class="saas-field">
-                    <label class="saas-label">Hero Heading</label>
-                    <input class="saas-input" type="text" name="hero_heading" value="{{ $allSettings['hero_heading'] ?? '' }}">
-                </div>
-                <div class="saas-field">
-                    <label class="saas-label">Hero Subheading</label>
-                    <textarea class="saas-textarea" name="hero_subheading" rows="3">{{ $allSettings['hero_subheading'] ?? '' }}</textarea>
-                </div>
-                <div class="saas-field">
-                    <label class="saas-label">Hero Image</label>
-                    <input class="saas-input" type="file" name="hero_image" accept="image/*">
-                    @if(!empty($allSettings['hero_image']))
-                        <img src="{{ asset('storage/' . $allSettings['hero_image']) }}" alt="" style="width:200px;margin-top:8px;border-radius:8px">
-                    @endif
-                </div>
-                <div class="saas-row saas-row--2">
-                    <div class="saas-field">
-                        <label class="saas-label">CTA Text</label>
-                        <input class="saas-input" type="text" name="cta_text" value="{{ $allSettings['cta_text'] ?? '' }}">
-                    </div>
-                    <div class="saas-field">
-                        <label class="saas-label">CTA Link</label>
-                        <input class="saas-input" type="text" name="cta_link" value="{{ $allSettings['cta_link'] ?? '' }}" placeholder="/contact or https://...">
-                    </div>
-                </div>
-            </div>
-
-            {{-- Footer --}}
-            <div class="tab-panel saas-panel__body" data-panel="footer" @if($activeTab !== 'footer') style="display:none" @endif>
-                <div class="saas-row saas-row--2">
-                    <div class="saas-field">
-                        <label class="saas-label">Copyright Text</label>
-                        <input class="saas-input" type="text" name="copyright" value="{{ $allSettings['copyright'] ?? '' }}">
-                    </div>
-                    <div class="saas-field">
-                        <label class="saas-label">Quick Links (JSON: label:url)</label>
-                        <textarea class="saas-textarea saas-textarea--mono" name="quick_links" rows="4" style="min-height:auto">{{ $allSettings['quick_links'] ?? '{"Services":"/services","Portfolio":"/portfolio","About":"/about","Blog":"/blog","Contact":"/contact"}' }}</textarea>
-                    </div>
-                </div>
-            </div>
-
-            <div class="saas-panel__body" id="settingsSaveBar" style="padding-top:0;border-top:1px solid var(--border-soft){{ $activeTab === 'updates' ? ';display:none' : '' }}">
-                <button type="submit" class="btn btn--primary saas-btn saas-btn--save">
-                    <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><path d="M17 21v-8H7v8M7 3v5h8"/></svg>
-                    Save all settings
-                </button>
-            </div>
-        </form>
-
-        {{-- Updates (outside settings form) --}}
-        <div class="tab-panel saas-panel__body" data-panel="updates" @if($activeTab !== 'updates') style="display:none" @endif>
-            <div class="saas-row saas-row--2">
-                <div class="saas-field">
-                    <div class="saas-eyebrow">Installed</div>
-                    <div class="saas-update-card" id="updateLocalCard">
-                        <div class="saas-update-card__title" id="updateLocalBranch">Loading…</div>
-                        <div class="saas-update-card__meta" id="updateLocalMeta">—</div>
-                        <div class="saas-update-card__msg" id="updateLocalMsg"></div>
-                    </div>
-                </div>
-                <div class="saas-field">
-                    <div class="saas-eyebrow">GitHub release</div>
-                    <div class="saas-update-card" id="updateReleaseCard">
-                        <div class="saas-update-card__title" id="updateReleaseTitle">Loading…</div>
-                        <div class="saas-update-card__meta" id="updateReleaseMeta">—</div>
-                        <div class="saas-update-card__msg" id="updateReleaseBody"></div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="saas-update-status" id="updateSyncStatus">Checking sync status…</div>
-
-            <div class="saas-update-actions">
-                <button type="button" class="btn btn--ghost saas-btn" id="btnUpdateCheck">Check for updates</button>
-                <button type="button" class="btn btn--primary saas-btn" id="btnUpdatePull">Pull latest + Artisan</button>
-                <button type="button" class="btn btn--ghost saas-btn" id="btnUpdateMaintain">Run Artisan only</button>
-            </div>
-
-            <p class="saas-help">
-                Pull uses <code>git pull --ff-only</code> from the configured remote/branch, then runs migrate (optional),
-                config/cache/route/view clear, and <code>storage:link</code>. Admin only. Disable with <code>UPDATER_ENABLED=false</code>.
-            </p>
-
-            <div class="saas-field">
-                <label class="saas-label">Command output</label>
-                <pre class="saas-update-console" id="updateConsole">Ready.</pre>
-            </div>
-        </div>
-    </section>
 </div>
 @endsection
 
 @push('scripts')
 <script>
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
+    var tabLabels = @json(collect($tabs)->mapWithKeys(fn ($t, $k) => [$k => $t['label']]));
     var saveBar = document.getElementById('settingsSaveBar');
+    var previewBox = document.querySelector('[data-settings-preview]');
     var csrf = document.querySelector('meta[name="csrf-token"]')?.content
         || document.querySelector('#settingsForm input[name="_token"]')?.value
         || '';
 
     function showTab(tab) {
-        document.querySelectorAll('.saas-tab').forEach(function(b) {
+        document.querySelectorAll('.saas-settings-nav__item').forEach(function (b) {
             b.classList.toggle('is-active', b.dataset.tab === tab);
         });
-        document.querySelectorAll('.tab-panel').forEach(function(p) {
+        document.querySelectorAll('.tab-panel').forEach(function (p) {
             p.style.display = p.dataset.panel === tab ? '' : 'none';
         });
-        if (saveBar) {
-            saveBar.style.display = tab === 'updates' ? 'none' : '';
-        }
-        if (tab === 'updates') {
-            loadStatus();
-        }
+        if (saveBar) saveBar.style.display = tab === 'updates' ? 'none' : '';
+        if (previewBox) previewBox.style.display = tab === 'general' ? '' : 'none';
+        var pill = document.getElementById('settingsTabPillText');
+        if (pill) pill.textContent = tabLabels[tab] || tab;
+        if (tab === 'updates') loadStatus();
         var url = new URL(window.location.href);
         url.searchParams.set('tab', tab);
         window.history.replaceState({}, '', url);
     }
 
-    document.querySelectorAll('.saas-tab').forEach(function(btn) {
-        btn.addEventListener('click', function() {
-            showTab(btn.dataset.tab);
+    document.querySelectorAll('.saas-settings-nav__item').forEach(function (btn) {
+        btn.addEventListener('click', function () { showTab(btn.dataset.tab); });
+    });
+
+    var siteName = document.getElementById('site_name');
+    var tagline = document.getElementById('tagline');
+    function syncPreview() {
+        var name = (siteName?.value || '').trim() || 'Site name';
+        document.getElementById('liveSettingsTitle').textContent = name;
+        document.getElementById('previewName').textContent = name;
+        if (tagline) {
+            document.getElementById('previewTagline').textContent = tagline.value.trim() || 'Site tagline';
+        }
+        var mark = document.querySelector('#previewLogo .saas-settings-preview__mark');
+        if (mark) mark.textContent = name.charAt(0).toUpperCase();
+    }
+    siteName?.addEventListener('input', syncPreview);
+    tagline?.addEventListener('input', syncPreview);
+
+    document.querySelectorAll('[data-dropzone]').forEach(function (zone) {
+        var input = zone.querySelector('.saas-dropzone__input');
+        var preview = zone.querySelector('.saas-dropzone__preview');
+        if (!input || !preview) return;
+        input.addEventListener('change', function () {
+            var file = (input.files || [])[0];
+            if (!file) return;
+            var url = URL.createObjectURL(file);
+            if (zone.dataset.dropzone === 'logo') {
+                preview.innerHTML =
+                    '<div class="saas-logo-frame"><img src="' + url + '" alt="New logo"></div>' +
+                    '<div class="saas-dropzone__overlay"><span>Replace logo</span></div>';
+                document.getElementById('previewLogo').innerHTML = '<img src="' + url + '" alt="Logo">';
+            } else if (zone.dataset.dropzone === 'favicon') {
+                preview.innerHTML =
+                    '<img src="' + url + '" alt="Favicon" style="width:48px;height:48px;object-fit:contain;border-radius:8px">' +
+                    '<div class="saas-dropzone__overlay"><span>Replace</span></div>';
+            } else {
+                preview.innerHTML =
+                    '<img src="' + url + '" alt="" style="max-width:100%;max-height:220px;object-fit:cover;border-radius:8px">' +
+                    '<div class="saas-dropzone__overlay"><span>Replace image</span></div>';
+            }
+        });
+        ['dragenter', 'dragover'].forEach(function (evt) {
+            zone.addEventListener(evt, function (e) { e.preventDefault(); zone.classList.add('is-drag'); });
+        });
+        ['dragleave', 'drop'].forEach(function (evt) {
+            zone.addEventListener(evt, function (e) { e.preventDefault(); zone.classList.remove('is-drag'); });
         });
     });
 
     function setBusy(busy) {
-        ['btnUpdateCheck', 'btnUpdatePull', 'btnUpdateMaintain'].forEach(function(id) {
+        ['btnUpdateCheck', 'btnUpdatePull', 'btnUpdateMaintain'].forEach(function (id) {
             var el = document.getElementById(id);
             if (el) el.disabled = busy;
         });
@@ -290,7 +508,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function formatSteps(steps) {
         if (!steps || !steps.length) return '';
-        return steps.map(function(s) {
+        return steps.map(function (s) {
             return (s.ok ? '[OK] ' : '[FAIL] ') + s.command + '\n' + (s.output || '');
         }).join('\n\n');
     }
@@ -351,7 +569,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     'X-Requested-With': 'XMLHttpRequest'
                 }
             });
-            var json = await res.json().catch(function() { return {}; });
+            var json = await res.json().catch(function () { return {}; });
             if (json.data) renderStatus(json.data);
             var out = [];
             if (json.message) out.push(json.message);
@@ -374,20 +592,18 @@ document.addEventListener('DOMContentLoaded', function() {
         api(@json(route('admin.settings.updates.status')), 'GET');
     }
 
-    document.getElementById('btnUpdateCheck')?.addEventListener('click', function() {
+    document.getElementById('btnUpdateCheck')?.addEventListener('click', function () {
         api(@json(route('admin.settings.updates.check')), 'POST');
     });
-    document.getElementById('btnUpdatePull')?.addEventListener('click', function() {
+    document.getElementById('btnUpdatePull')?.addEventListener('click', function () {
         if (!confirm('Pull latest from GitHub and run Artisan maintenance? This cannot be undone easily.')) return;
         api(@json(route('admin.settings.updates.pull')), 'POST');
     });
-    document.getElementById('btnUpdateMaintain')?.addEventListener('click', function() {
+    document.getElementById('btnUpdateMaintain')?.addEventListener('click', function () {
         api(@json(route('admin.settings.updates.maintenance')), 'POST');
     });
 
-    if (@json($activeTab === 'updates')) {
-        loadStatus();
-    }
+    if (@json($activeTab === 'updates')) loadStatus();
 });
 </script>
 @endpush
