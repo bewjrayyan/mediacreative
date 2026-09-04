@@ -83,6 +83,14 @@ html, body { height: 100%; }
 }
 
 .saas-editor { --saas-radius: 14px; --saas-gap: 20px; max-width: 1100px; margin: 0 auto; }
+.saas-editor.saas-settings {
+  max-width: none;
+  width: auto;
+  margin: 0 20px 24px;
+}
+@media (max-width: 720px) {
+  .saas-editor.saas-settings { margin: 0 12px 16px; }
+}
 .saas-toolbar {
   position: sticky; top: 0; z-index: 40;
   display: flex; align-items: center; justify-content: space-between; gap: 16px;

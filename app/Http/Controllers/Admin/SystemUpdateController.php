@@ -77,6 +77,24 @@ class SystemUpdateController extends Controller implements HasMiddleware
         ], $result['ok'] ? 200 : 500);
     }
 
+    public function clearCache(SystemUpdater $updater): JsonResponse
+    {
+        if (! auth()->user()?->isAdmin()) {
+            abort(403, 'Only administrators can clear caches.');
+        }
+
+        $result = $updater->clearCaches();
+
+        return response()->json([
+            'ok' => $result['ok'],
+            'message' => $result['ok']
+                ? 'Caches cleared. Reloading this page…'
+                : 'Some cache clear commands failed. Review the output.',
+            'steps' => $result['steps'],
+            'reload' => $result['ok'],
+        ], $result['ok'] ? 200 : 500);
+    }
+
     private function ensureEnabled(SystemUpdater $updater): void
     {
         if (! $updater->isEnabled()) {

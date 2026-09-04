@@ -15,12 +15,14 @@
         'seo' => ['label' => 'SEO', 'hint' => 'Search & share'],
         'home' => ['label' => 'Homepage', 'hint' => 'Hero & CTA'],
         'footer' => ['label' => 'Footer', 'hint' => 'Copyright & links'],
+        'cache' => ['label' => 'Clear cache', 'hint' => 'Refresh admin UI'],
         'updates' => ['label' => 'Updates', 'hint' => 'GitHub deploy'],
     ];
     $activeTab = request('tab', 'general');
     if (! array_key_exists($activeTab, $tabs)) {
         $activeTab = 'general';
     }
+    $hideSaveTabs = ['updates', 'cache'];
 @endphp
 
 <div class="saas-editor saas-settings">
@@ -35,7 +37,7 @@
                 <span id="settingsTabPillText">{{ $tabs[$activeTab]['label'] }}</span>
             </span>
         </div>
-        <div class="saas-toolbar__actions" id="settingsSaveBar" @if($activeTab === 'updates') style="display:none" @endif>
+        <div class="saas-toolbar__actions" id="settingsSaveBar" @if(in_array($activeTab, $hideSaveTabs, true)) style="display:none" @endif>
             <button type="submit" form="settingsForm" class="btn btn--primary saas-btn saas-btn--save">
                 <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><path d="M17 21v-8H7v8M7 3v5h8"/></svg>
                 Save settings
@@ -362,6 +364,38 @@
                 </div>
             </form>
 
+            {{-- Clear cache --}}
+            <div class="saas-settings-panel" data-panel="cache" @if($activeTab !== 'cache') hidden @endif>
+                <section class="saas-panel">
+                    <div class="saas-panel__head">
+                        <div>
+                            <h2 class="saas-panel__title">Clear cache</h2>
+                            <p class="saas-panel__sub">Refresh Laravel caches so admin UI and pages pick up the latest changes — no hard refresh required.</p>
+                        </div>
+                    </div>
+                    <div class="saas-panel__body">
+                        <div class="saas-update-card">
+                            <div class="saas-update-card__title">What this does</div>
+                            <div class="saas-update-card__msg">Clears config, application, route, and view caches (<code>optimize:clear</code> + related Artisan commands), then reloads this page automatically.</div>
+                        </div>
+
+                        <div class="saas-update-actions">
+                            <button type="button" class="btn btn--primary saas-btn" id="btnClearCache">
+                                <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg>
+                                Clear cache &amp; reload
+                            </button>
+                        </div>
+
+                        <p class="saas-help">Use this after an update if styles or menus look outdated. Admin only.</p>
+
+                        <div class="saas-field">
+                            <label class="saas-label">Command output</label>
+                            <pre class="saas-update-console" id="cacheConsole">Ready.</pre>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
             {{-- Updates --}}
             <div class="saas-settings-panel" data-panel="updates" @if($activeTab !== 'updates') hidden @endif>
                 <section class="saas-panel">
@@ -432,7 +466,7 @@ document.addEventListener('DOMContentLoaded', function () {
         document.querySelectorAll('.saas-settings-panel').forEach(function (p) {
             p.hidden = p.dataset.panel !== tab;
         });
-        if (saveBar) saveBar.style.display = tab === 'updates' ? 'none' : '';
+        if (saveBar) saveBar.style.display = (tab === 'updates' || tab === 'cache') ? 'none' : '';
         if (previewBox) previewBox.style.display = tab === 'general' ? '' : 'none';
         var pill = document.getElementById('settingsTabPillText');
         if (pill) pill.textContent = tabLabels[tab] || tab;
@@ -493,14 +527,14 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     function setBusy(busy) {
-        ['btnUpdateCheck', 'btnUpdatePull', 'btnUpdateMaintain'].forEach(function (id) {
+        ['btnUpdateCheck', 'btnUpdatePull', 'btnUpdateMaintain', 'btnClearCache'].forEach(function (id) {
             var el = document.getElementById(id);
             if (el) el.disabled = busy;
         });
     }
 
-    function appendConsole(lines) {
-        var cons = document.getElementById('updateConsole');
+    function appendConsole(lines, consoleId) {
+        var cons = document.getElementById(consoleId || 'updateConsole');
         if (!cons) return;
         cons.textContent = (typeof lines === 'string' ? lines : (lines || []).join('\n')) || 'Done.';
         cons.scrollTop = cons.scrollHeight;
@@ -558,9 +592,11 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    async function api(url, method) {
+    async function api(url, method, options) {
+        options = options || {};
+        var consoleId = options.consoleId || 'updateConsole';
         setBusy(true);
-        appendConsole('Running…');
+        appendConsole('Running…', consoleId);
         try {
             var res = await fetch(url, {
                 method: method || 'GET',
@@ -579,10 +615,18 @@ document.addEventListener('DOMContentLoaded', function () {
                 out.push(formatSteps(json.data.steps));
             }
             if (!out.length) out.push(res.ok ? 'OK' : ('HTTP ' + res.status));
-            appendConsole(out.join('\n\n'));
+            appendConsole(out.join('\n\n'), consoleId);
+            if (json.reload && json.ok) {
+                setTimeout(function () {
+                    var next = new URL(window.location.href);
+                    next.searchParams.set('tab', options.reloadTab || 'cache');
+                    next.searchParams.set('_', String(Date.now()));
+                    window.location.href = next.toString();
+                }, 700);
+            }
             return json;
         } catch (e) {
-            appendConsole('Error: ' + e.message);
+            appendConsole('Error: ' + e.message, consoleId);
             return null;
         } finally {
             setBusy(false);
@@ -602,6 +646,12 @@ document.addEventListener('DOMContentLoaded', function () {
     });
     document.getElementById('btnUpdateMaintain')?.addEventListener('click', function () {
         api(@json(route('admin.settings.updates.maintenance')), 'POST');
+    });
+    document.getElementById('btnClearCache')?.addEventListener('click', function () {
+        api(@json(route('admin.settings.cache.clear')), 'POST', {
+            consoleId: 'cacheConsole',
+            reloadTab: 'cache'
+        });
     });
 
     if (@json($activeTab === 'updates')) loadStatus();

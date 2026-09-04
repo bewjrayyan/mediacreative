@@ -132,6 +132,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::post('settings/updates/check', [SystemUpdateController::class, 'check'])->name('settings.updates.check');
         Route::post('settings/updates/pull', [SystemUpdateController::class, 'pull'])->name('settings.updates.pull');
         Route::post('settings/updates/maintenance', [SystemUpdateController::class, 'maintenance'])->name('settings.updates.maintenance');
+        Route::post('settings/cache/clear', [SystemUpdateController::class, 'clearCache'])->name('settings.cache.clear');
 
         // CMS Pages
         Route::resource('pages', AdminPageController::class)->except('show');

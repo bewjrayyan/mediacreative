@@ -242,6 +242,31 @@ class SystemUpdater
         ];
     }
 
+    /**
+     * Clear application caches without migrate / pull / storage:link.
+     *
+     * @return array{ok: bool, steps: list<array>}
+     */
+    public function clearCaches(): array
+    {
+        $steps = [];
+
+        foreach ([
+            ['optimize:clear'],
+            ['config:clear'],
+            ['cache:clear'],
+            ['route:clear'],
+            ['view:clear'],
+        ] as $command) {
+            $steps[] = $this->runArtisan($command);
+        }
+
+        return [
+            'ok' => collect($steps)->every(fn (array $step) => $step['ok']),
+            'steps' => $steps,
+        ];
+    }
+
     public function latestRelease(): ?array
     {
         $repo = (string) config('updater.github_repo');

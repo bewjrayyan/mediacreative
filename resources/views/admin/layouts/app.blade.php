@@ -19,8 +19,8 @@
         }
       })();
     </script>
-    <link rel="stylesheet" href="{{ asset('adminator/css/adminator.css') }}" fetchpriority="high">
-    <link rel="stylesheet" href="{{ asset('adminator/css/saas-admin.css') }}">
+    <link rel="stylesheet" href="{{ asset('adminator/css/adminator.css') }}?v={{ config('app.version') }}" fetchpriority="high">
+    <link rel="stylesheet" href="{{ asset('adminator/css/saas-admin.css') }}?v={{ config('app.version') }}">
     <style>
         .flash { position: fixed; top: 80px; right: 24px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; }
         .flash-alert { display: flex; align-items: flex-start; gap: 10px; padding: 14px 18px; border-radius: 10px; font-size: 14px; box-shadow: var(--shadow-lg); max-width: 380px; background: var(--bg-card); border: 1px solid var(--border); }
