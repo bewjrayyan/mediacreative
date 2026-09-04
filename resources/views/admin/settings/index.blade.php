@@ -526,8 +526,9 @@ document.addEventListener('DOMContentLoaded', function () {
                 .filter(Boolean).join(' · ');
         document.getElementById('updateLocalMsg').textContent = local.message || '';
         if (local.dirty) {
+            var dirtyList = (local.dirty_files || []).join(', ');
             document.getElementById('updateLocalMsg').textContent +=
-                (local.message ? ' · ' : '') + 'Working tree has local changes';
+                (local.message ? ' · ' : '') + 'Local changes' + (dirtyList ? ': ' + dirtyList : '');
         }
 
         document.getElementById('updateReleaseTitle').textContent =
