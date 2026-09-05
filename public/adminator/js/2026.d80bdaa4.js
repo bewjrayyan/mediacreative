@@ -33,10 +33,10 @@ const NAV = [
     items: [
       { key: 'dashboard', text: 'Dashboard', href: '/admin',
         icon: '<path d="M3 12 12 3l9 9"/><path d="M5 10v10h14V10"/>' },
-      { key: 'docs', text: 'Documentation', href: 'https://adminator.colorlib.com/docs/', badge: { kind: 'new', text: 'DOCS' },
-        icon: '<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>' },
-      { key: 'pro', text: 'Go Pro', href: 'https://dashboardpack.com/?utm_source=colorlib&utm_medium=adminator-demo&utm_campaign=sidebar-go-pro', badge: { kind: 'pro', text: 'PRO' },
-        icon: '<path d="M12 2 15 8l6.5 1-4.8 4.6L18 20l-6-3-6 3 1.3-6.4L2.5 9 9 8z"/>' },
+      { key: 'sales', text: 'Sales', href: '/admin/sales', badge: { kind: 'new', text: 'NEW' },
+        icon: '<path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/>' },
+      { key: 'products', text: 'Products', href: '/admin/products', badge: { kind: 'pro', text: 'PRO' },
+        icon: '<path d="M16.5 9.4 7.55 4.24"/><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><path d="M3.29 7 12 12l8.71-5M12 22V12"/>' },
     ],
   },
   {

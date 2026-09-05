@@ -16,18 +16,22 @@
         <div class="blog-single">
             @if($project->thumbnail)
             <div class="cover">
-                <img src="{{ asset('storage/' . $project->thumbnail) }}" alt="{{ $project->title }}">
+                <button type="button" class="img-zoom" data-zoom-src="{{ asset('storage/' . $project->thumbnail) }}" data-zoom-alt="{{ $project->title }}" aria-label="{{ __('View full image') }}">
+                    <img src="{{ asset('storage/' . $project->thumbnail) }}" alt="{{ $project->title }}">
+                </button>
             </div>
             @endif
 
             <div class="blog-content">
-                <p style="font-size:18px;color:var(--text);line-height:1.8;margin-bottom:28px">{{ $project->description }}</p>
+                <div class="project-prose">{!! strip_tags($project->description, '<p><br><br/><strong><b><em><i><u><ul><ol><li><a><h2><h3><blockquote>') !!}</div>
 
                 @if(!empty($project->gallery_images))
                 <h2>{{ __('Gallery') }}</h2>
                 <div class="gallery-grid">
                     @foreach($project->gallery_images as $img)
-                    <img src="{{ asset('storage/' . $img) }}" alt="{{ __('Gallery') }}">
+                    <button type="button" class="img-zoom" data-zoom-src="{{ asset('storage/' . $img) }}" data-zoom-alt="{{ $project->title }} — {{ __('Gallery') }}" aria-label="{{ __('View full image') }}">
+                        <img src="{{ asset('storage/' . $img) }}" alt="{{ __('Gallery') }}">
+                    </button>
                     @endforeach
                 </div>
                 @endif
@@ -81,3 +85,78 @@
 </section>
 @endif
 @endsection
+
+@push('scripts')
+<script>
+(function () {
+  var triggers = Array.prototype.slice.call(document.querySelectorAll('.img-zoom[data-zoom-src]'));
+  if (!triggers.length) return;
+
+  var overlay = document.createElement('div');
+  overlay.className = 'img-lightbox';
+  overlay.setAttribute('role', 'dialog');
+  overlay.setAttribute('aria-modal', 'true');
+  overlay.setAttribute('aria-label', @json(__('Image viewer')));
+  overlay.hidden = true;
+  overlay.innerHTML =
+    '<button type="button" class="img-lightbox__close" aria-label="' + @json(__('Close')) + '">&times;</button>' +
+    '<button type="button" class="img-lightbox__nav img-lightbox__nav--prev" aria-label="' + @json(__('Previous image')) + '">&#8249;</button>' +
+    '<button type="button" class="img-lightbox__nav img-lightbox__nav--next" aria-label="' + @json(__('Next image')) + '">&#8250;</button>' +
+    '<figure class="img-lightbox__figure"><img class="img-lightbox__img" alt=""><figcaption class="img-lightbox__cap"></figcaption></figure>';
+  document.body.appendChild(overlay);
+
+  var imgEl = overlay.querySelector('.img-lightbox__img');
+  var capEl = overlay.querySelector('.img-lightbox__cap');
+  var btnClose = overlay.querySelector('.img-lightbox__close');
+  var btnPrev = overlay.querySelector('.img-lightbox__nav--prev');
+  var btnNext = overlay.querySelector('.img-lightbox__nav--next');
+  var index = 0;
+  var lastFocus = null;
+
+  function show(i) {
+    index = (i + triggers.length) % triggers.length;
+    var t = triggers[index];
+    imgEl.src = t.getAttribute('data-zoom-src');
+    imgEl.alt = t.getAttribute('data-zoom-alt') || '';
+    capEl.textContent = imgEl.alt;
+    var multi = triggers.length > 1;
+    btnPrev.hidden = !multi;
+    btnNext.hidden = !multi;
+  }
+
+  function open(i) {
+    lastFocus = document.activeElement;
+    show(i);
+    overlay.hidden = false;
+    document.documentElement.classList.add('img-lightbox-open');
+    btnClose.focus();
+  }
+
+  function close() {
+    overlay.hidden = true;
+    document.documentElement.classList.remove('img-lightbox-open');
+    imgEl.removeAttribute('src');
+    if (lastFocus && lastFocus.focus) lastFocus.focus();
+  }
+
+  triggers.forEach(function (btn, i) {
+    btn.addEventListener('click', function () { open(i); });
+  });
+
+  btnClose.addEventListener('click', close);
+  btnPrev.addEventListener('click', function (e) { e.stopPropagation(); show(index - 1); });
+  btnNext.addEventListener('click', function (e) { e.stopPropagation(); show(index + 1); });
+
+  overlay.addEventListener('click', function (e) {
+    if (e.target === overlay || e.target.classList.contains('img-lightbox__figure')) close();
+  });
+
+  document.addEventListener('keydown', function (e) {
+    if (overlay.hidden) return;
+    if (e.key === 'Escape') close();
+    else if (e.key === 'ArrowLeft') show(index - 1);
+    else if (e.key === 'ArrowRight') show(index + 1);
+  });
+})();
+</script>
+@endpush

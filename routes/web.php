@@ -2,11 +2,13 @@
 
 use App\Http\Controllers\AboutController;
 use App\Http\Controllers\Admin\AuthController;
+use App\Http\Controllers\Admin\CalendarController;
 use App\Http\Controllers\Admin\ClientController;
 use App\Http\Controllers\Admin\ContactMessageController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\PageController as AdminPageController;
 use App\Http\Controllers\Admin\PostController as AdminPostController;
+use App\Http\Controllers\Admin\ProfileController;
 use App\Http\Controllers\Admin\ProjectController as AdminProjectController;
 use App\Http\Controllers\Admin\ServiceController as AdminServiceController;
 use App\Http\Controllers\Admin\SettingsController;
@@ -74,9 +76,15 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 
         // Adminator UI pages (sidebar menu)
+        Route::get('sales', fn () => app(UiPageController::class)->show('sales'))->name('sales');
+        Route::get('products', fn () => app(UiPageController::class)->show('products'))->name('products');
         Route::get('email', fn () => app(UiPageController::class)->show('email'))->name('email');
         Route::get('compose', fn () => app(UiPageController::class)->show('compose'))->name('compose');
-        Route::get('calendar', fn () => app(UiPageController::class)->show('calendar'))->name('calendar');
+        Route::get('calendar', [CalendarController::class, 'index'])->name('calendar');
+        Route::get('calendar/events', [CalendarController::class, 'events'])->name('calendar.events');
+        Route::post('calendar/events', [CalendarController::class, 'store'])->name('calendar.events.store');
+        Route::put('calendar/events/{calendarEvent}', [CalendarController::class, 'update'])->name('calendar.events.update');
+        Route::delete('calendar/events/{calendarEvent}', [CalendarController::class, 'destroy'])->name('calendar.events.destroy');
         Route::get('chat', fn () => app(UiPageController::class)->show('chat'))->name('chat');
         Route::get('charts', fn () => app(UiPageController::class)->show('charts'))->name('charts');
         Route::get('forms', fn () => app(UiPageController::class)->show('forms'))->name('forms');
@@ -123,6 +131,10 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::patch('messages/{message}/mark-replied', [ContactMessageController::class, 'markReplied'])->name('messages.mark-replied');
         Route::patch('messages/{message}/mark-read', [ContactMessageController::class, 'markRead'])->name('messages.mark-read');
         Route::delete('messages/{message}', [ContactMessageController::class, 'destroy'])->name('messages.destroy');
+
+        // Profile (current user)
+        Route::get('profile', [ProfileController::class, 'edit'])->name('profile.edit');
+        Route::put('profile', [ProfileController::class, 'update'])->name('profile.update');
 
         // Users (admin only - enforced in controller)
         Route::resource('users', UserController::class)->except('show');

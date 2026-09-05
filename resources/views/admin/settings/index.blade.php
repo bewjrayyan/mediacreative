@@ -8,18 +8,70 @@
 @php
     $allSettings = \App\Models\PageSetting::all()->pluck('value', 'key')->toArray();
     $siteName = old('site_name', $allSettings['site_name'] ?? 'DesignPro');
-    $tabs = [
-        'general' => ['label' => 'General', 'hint' => 'Brand & identity'],
-        'contact' => ['label' => 'Contact', 'hint' => 'Reach details'],
-        'social' => ['label' => 'Social', 'hint' => 'Profile links'],
-        'seo' => ['label' => 'SEO', 'hint' => 'Search & share'],
-        'home' => ['label' => 'Homepage', 'hint' => 'Hero & CTA'],
-        'services_page' => ['label' => 'Services page', 'hint' => 'Flow & tech'],
-        'portfolio_page' => ['label' => 'Portfolio page', 'hint' => 'Hero & CTA'],
-        'footer' => ['label' => 'Footer', 'hint' => 'Copyright & links'],
-        'cache' => ['label' => 'Clear cache', 'hint' => 'Refresh admin UI'],
-        'updates' => ['label' => 'Updates', 'hint' => 'GitHub deploy'],
+    $navSections = [
+        'Site' => [
+            'general' => [
+                'label' => 'General',
+                'hint' => 'Brand & identity',
+                'icon' => '<circle cx="12" cy="12" r="3"/><path d="M12 1v2M12 21v2M4.2 4.2l1.4 1.4M18.4 18.4l1.4 1.4M1 12h2M21 12h2M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4"/>',
+            ],
+            'contact' => [
+                'label' => 'Contact',
+                'hint' => 'Reach details',
+                'icon' => '<path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.81.36 1.6.68 2.34a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.74-1.25a2 2 0 0 1 2.11-.45c.74.32 1.53.55 2.34.68A2 2 0 0 1 22 16.92z"/>',
+            ],
+            'social' => [
+                'label' => 'Social',
+                'hint' => 'Profile links',
+                'icon' => '<circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.6 13.5 6.8 3.9M15.4 6.6l-6.8 3.9"/>',
+            ],
+            'seo' => [
+                'label' => 'SEO',
+                'hint' => 'Search & share',
+                'icon' => '<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>',
+            ],
+            'footer' => [
+                'label' => 'Footer',
+                'hint' => 'Copyright & links',
+                'icon' => '<rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 15h18"/>',
+            ],
+        ],
+        'Pages' => [
+            'home' => [
+                'label' => 'Homepage',
+                'hint' => 'Hero & CTA',
+                'icon' => '<path d="M3 12 12 3l9 9"/><path d="M5 10v10h14V10"/>',
+            ],
+            'services_page' => [
+                'label' => 'Services page',
+                'hint' => 'Flow & tech',
+                'icon' => '<circle cx="12" cy="12" r="10"/><path d="m8 12 3 3 5-6"/>',
+            ],
+            'portfolio_page' => [
+                'label' => 'Portfolio page',
+                'hint' => 'Hero & CTA',
+                'icon' => '<rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/>',
+            ],
+        ],
+        'System' => [
+            'cache' => [
+                'label' => 'Clear cache',
+                'hint' => 'Refresh admin UI',
+                'icon' => '<path d="M21 12a9 9 0 1 1-2.6-6.4"/><path d="M21 3v6h-6"/>',
+            ],
+            'updates' => [
+                'label' => 'Updates',
+                'hint' => 'GitHub deploy',
+                'icon' => '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5M12 15V3"/>',
+            ],
+        ],
     ];
+    $tabs = [];
+    foreach ($navSections as $items) {
+        foreach ($items as $key => $meta) {
+            $tabs[$key] = $meta;
+        }
+    }
     $activeTab = request('tab', 'general');
     if (! array_key_exists($activeTab, $tabs)) {
         $activeTab = 'general';
@@ -63,41 +115,22 @@
 
     <div class="saas-layout">
         <aside class="saas-side">
-            <section class="saas-panel saas-panel--side">
-                <div class="saas-panel__head">
-                    <h2 class="saas-panel__title">Sections</h2>
-                </div>
-                <nav class="saas-settings-nav" aria-label="Settings sections">
-                    @foreach($tabs as $key => $meta)
-                        <button type="button"
-                            class="saas-settings-nav__item {{ $activeTab === $key ? 'is-active' : '' }}"
-                            data-tab="{{ $key }}">
-                            <span class="saas-settings-nav__label">{{ $meta['label'] }}</span>
-                            <span class="saas-settings-nav__hint">{{ $meta['hint'] }}</span>
-                        </button>
+            <div class="saas-settings-menu saas-panel saas-panel--side">
+                @foreach($navSections as $sectionLabel => $items)
+                <nav class="nav-section" aria-label="{{ $sectionLabel }}">
+                    <div class="nav-label">{{ $sectionLabel }}</div>
+                    @foreach($items as $key => $meta)
+                    <button type="button"
+                        class="nav-link {{ $activeTab === $key ? 'is-active' : '' }}"
+                        data-tab="{{ $key }}"
+                        title="{{ $meta['hint'] }}">
+                        <svg viewBox="0 0 24 24">{!! $meta['icon'] !!}</svg>
+                        <span>{{ $meta['label'] }}</span>
+                    </button>
                     @endforeach
                 </nav>
-            </section>
-
-            <section class="saas-panel saas-panel--side" data-settings-preview @if($activeTab !== 'general') style="display:none" @endif>
-                <div class="saas-panel__head">
-                    <h2 class="saas-panel__title">Preview</h2>
-                </div>
-                <div class="saas-panel__body saas-panel__body--tight">
-                    <div class="saas-settings-preview">
-                        <div class="saas-settings-preview__logo" id="previewLogo">
-                            @if(!empty($allSettings['logo']))
-                                <img src="{{ asset('storage/' . $allSettings['logo']) }}" alt="Logo">
-                            @else
-                                <span class="saas-settings-preview__mark">{{ strtoupper(mb_substr($siteName, 0, 1)) }}</span>
-                            @endif
-                        </div>
-                        <div class="saas-settings-preview__name" id="previewName">{{ $siteName }}</div>
-                        <div class="saas-settings-preview__tag" id="previewTagline">{{ old('tagline', $allSettings['tagline'] ?? 'Site tagline') }}</div>
-                    </div>
-                    <p class="saas-help">Live preview of brand identity on the public site.</p>
-                </div>
-            </section>
+                @endforeach
+            </div>
         </aside>
 
         <div class="saas-main">
@@ -106,7 +139,31 @@
 
                 {{-- General --}}
                 <div class="saas-settings-panel" data-panel="general" @if($activeTab !== 'general') hidden @endif>
-                    <section class="saas-panel">
+                    <section class="saas-panel saas-settings-preview-card" data-settings-preview>
+                        <div class="saas-panel__head">
+                            <div>
+                                <h2 class="saas-panel__title">Live preview</h2>
+                                <p class="saas-panel__sub">Brand identity as it appears on the public site.</p>
+                            </div>
+                        </div>
+                        <div class="saas-panel__body saas-panel__body--tight">
+                            <div class="saas-settings-preview saas-settings-preview--inline">
+                                <div class="saas-settings-preview__logo" id="previewLogo">
+                                    @if(!empty($allSettings['logo']))
+                                        <img src="{{ asset('storage/' . $allSettings['logo']) }}" alt="Logo">
+                                    @else
+                                        <span class="saas-settings-preview__mark">{{ strtoupper(mb_substr($siteName, 0, 1)) }}</span>
+                                    @endif
+                                </div>
+                                <div class="saas-settings-preview__copy">
+                                    <div class="saas-settings-preview__name" id="previewName">{{ $siteName }}</div>
+                                    <div class="saas-settings-preview__tag" id="previewTagline">{{ old('tagline', $allSettings['tagline'] ?? 'Site tagline') }}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="saas-panel" style="margin-top:20px">
                         <div class="saas-panel__head">
                             <div>
                                 <h2 class="saas-panel__title">Brand identity</h2>
@@ -249,48 +306,104 @@
                     </section>
                 </div>
 
-                {{-- SEO --}}
+                {{-- SEO — Google preview + meta title/keywords (auto) --}}
                 <div class="saas-settings-panel" data-panel="seo" @if($activeTab !== 'seo') hidden @endif>
-                    <section class="saas-panel">
-                        <div class="saas-panel__head">
-                            <div>
-                                <h2 class="saas-panel__title">Default SEO</h2>
-                                <p class="saas-panel__sub">Fallbacks for pages without custom meta tags.</p>
+                    @php
+                        $seoHost = parse_url(config('app.url'), PHP_URL_HOST) ?: request()->getHost();
+                        $seoMetaTitle = old('meta_title', $allSettings['meta_title'] ?? '');
+                        $seoMetaDesc = old('meta_description', $allSettings['meta_description'] ?? '');
+                        $seoKeywords = old('keywords', $allSettings['keywords'] ?? '');
+                    @endphp
+                    <div class="saas-layout"
+                        style="grid-template-columns: minmax(0,1fr) 300px; margin:0"
+                        data-seo-panel
+                        data-site-name="{{ $siteName }}"
+                        data-url-prefix="/"
+                        data-host="{{ $seoHost }}"
+                        data-title-source="#site_name"
+                        data-slug-source=""
+                        data-desc-sources="#site_description,#meta_description,#tagline"
+                        data-keyword-sources="#site_name,#tagline,#site_description,#meta_title,#meta_description,#keywords">
+                        <section class="saas-panel">
+                            <div class="saas-panel__head">
+                                <div>
+                                    <h2 class="saas-panel__title">Default SEO</h2>
+                                    <p class="saas-panel__sub">Fallbacks for pages without custom meta tags.</p>
+                                </div>
                             </div>
-                        </div>
-                        <div class="saas-panel__body">
-                            <div class="saas-field">
-                                <label class="saas-label" for="meta_title">Meta title</label>
-                                <input class="saas-input" id="meta_title" type="text" name="meta_title" value="{{ old('meta_title', $allSettings['meta_title'] ?? '') }}">
-                            </div>
-                            <div class="saas-field">
-                                <label class="saas-label" for="meta_description">Meta description</label>
-                                <textarea class="saas-textarea" id="meta_description" name="meta_description" rows="3">{{ old('meta_description', $allSettings['meta_description'] ?? '') }}</textarea>
-                            </div>
-                            <div class="saas-field">
-                                <label class="saas-label" for="keywords">Keywords</label>
-                                <input class="saas-input" id="keywords" type="text" name="keywords" value="{{ old('keywords', $allSettings['keywords'] ?? '') }}" placeholder="design, agency, branding">
-                                <p class="saas-help">Comma-separated keywords.</p>
-                            </div>
-                            <div class="saas-field">
-                                <label class="saas-label" for="og_image">OG image</label>
-                                <div class="saas-dropzone" data-dropzone="og_image">
-                                    <input type="file" name="og_image" id="og_image" accept="image/*" class="saas-dropzone__input">
-                                    <div class="saas-dropzone__preview" id="ogPreview" style="min-height:180px;display:grid;place-items:center">
-                                        @if(!empty($allSettings['og_image']))
-                                            <img src="{{ asset('storage/' . $allSettings['og_image']) }}" alt="OG" style="max-width:100%;max-height:200px;object-fit:cover;border-radius:8px">
-                                            <div class="saas-dropzone__overlay"><span>Replace image</span></div>
-                                        @else
-                                            <div class="saas-dropzone__empty">
-                                                <strong>Drop Open Graph image</strong>
-                                                <span>Recommended 1200×630</span>
-                                            </div>
-                                        @endif
+                            <div class="saas-panel__body">
+                                <div class="saas-field">
+                                    <label class="saas-label" for="meta_title">
+                                        Meta title
+                                        <span class="saas-seo-count" data-seo-count="title">0/60</span>
+                                    </label>
+                                    <input class="saas-input" id="meta_title" type="text" name="meta_title" value="{{ $seoMetaTitle }}" maxlength="70" data-seo-title placeholder="Auto from site name">
+                                    <p class="saas-help">Aim for ~50–60 characters.</p>
+                                </div>
+                                <div class="saas-field">
+                                    <label class="saas-label" for="meta_description">
+                                        Meta description
+                                        <span class="saas-seo-count" data-seo-count="description">0/160</span>
+                                    </label>
+                                    <textarea class="saas-textarea" id="meta_description" name="meta_description" rows="3" maxlength="180" data-seo-description placeholder="Auto from site description">{{ $seoMetaDesc }}</textarea>
+                                    <p class="saas-help">Aim for ~120–160 characters.</p>
+                                </div>
+                                <div class="saas-field">
+                                    <div class="saas-label-row">
+                                        <label class="saas-label" for="keywords">Meta keywords</label>
+                                        <button type="button" class="saas-seo-regen" data-seo-regen-keywords>Auto</button>
+                                    </div>
+                                    <input class="saas-input" id="keywords" type="text" name="keywords" value="{{ $seoKeywords }}" maxlength="500" data-seo-keywords data-seo-keywords-auto="{{ $seoKeywords === '' ? '1' : '0' }}" placeholder="design, agency, branding">
+                                    <p class="saas-help">Comma-separated. Auto-fills from site name &amp; description until you edit.</p>
+                                </div>
+                                <div class="saas-field">
+                                    <label class="saas-label" for="og_image">OG image</label>
+                                    <div class="saas-dropzone" data-dropzone="og_image">
+                                        <input type="file" name="og_image" id="og_image" accept="image/*" class="saas-dropzone__input">
+                                        <div class="saas-dropzone__preview" id="ogPreview" style="min-height:180px;display:grid;place-items:center">
+                                            @if(!empty($allSettings['og_image']))
+                                                <img src="{{ asset('storage/' . $allSettings['og_image']) }}" alt="OG" style="max-width:100%;max-height:200px;object-fit:cover;border-radius:8px">
+                                                <div class="saas-dropzone__overlay"><span>Replace image</span></div>
+                                            @else
+                                                <div class="saas-dropzone__empty">
+                                                    <strong>Drop Open Graph image</strong>
+                                                    <span>Recommended 1200×630</span>
+                                                </div>
+                                            @endif
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    </section>
+                        </section>
+
+                        <aside class="saas-side">
+                            <section class="saas-panel saas-panel--side saas-seo-panel">
+                                <div class="saas-panel__head">
+                                    <h2 class="saas-panel__title">Google preview</h2>
+                                </div>
+                                <div class="saas-panel__body saas-panel__body--tight">
+                                    <div class="saas-serp" aria-label="Google search preview">
+                                        <div class="saas-serp__card">
+                                            <div class="saas-serp__url">
+                                                <span class="saas-serp__favicon" aria-hidden="true">{{ strtoupper(mb_substr($siteName, 0, 1)) }}</span>
+                                                <div class="saas-serp__crumbs">
+                                                    <span class="saas-serp__host">{{ $seoHost }}</span>
+                                                    <span class="saas-serp__path" data-seo-path>/</span>
+                                                </div>
+                                            </div>
+                                            <a class="saas-serp__title" data-seo-preview-title href="javascript:void(0)" tabindex="-1">
+                                                {{ $seoMetaTitle !== '' ? $seoMetaTitle : ($siteName.' · …') }}
+                                            </a>
+                                            <p class="saas-serp__desc" data-seo-preview-desc>
+                                                {{ $seoMetaDesc !== '' ? $seoMetaDesc : 'Add a meta description to control how this page appears in Google search results.' }}
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <p class="saas-help">Live preview updates as you edit meta title and description.</p>
+                                </div>
+                            </section>
+                        </aside>
+                    </div>
                 </div>
 
                 {{-- Homepage --}}
@@ -620,20 +733,18 @@
 document.addEventListener('DOMContentLoaded', function () {
     var tabLabels = @json(collect($tabs)->mapWithKeys(fn ($t, $k) => [$k => $t['label']]));
     var saveBar = document.getElementById('settingsSaveBar');
-    var previewBox = document.querySelector('[data-settings-preview]');
     var csrf = document.querySelector('meta[name="csrf-token"]')?.content
         || document.querySelector('#settingsForm input[name="_token"]')?.value
         || '';
 
     function showTab(tab) {
-        document.querySelectorAll('.saas-settings-nav__item').forEach(function (b) {
+        document.querySelectorAll('.saas-settings-menu .nav-link[data-tab]').forEach(function (b) {
             b.classList.toggle('is-active', b.dataset.tab === tab);
         });
         document.querySelectorAll('.saas-settings-panel').forEach(function (p) {
             p.hidden = p.dataset.panel !== tab;
         });
         if (saveBar) saveBar.style.display = (tab === 'updates' || tab === 'cache') ? 'none' : '';
-        if (previewBox) previewBox.style.display = tab === 'general' ? '' : 'none';
         var pill = document.getElementById('settingsTabPillText');
         if (pill) pill.textContent = tabLabels[tab] || tab;
         if (tab === 'updates') loadStatus();
@@ -642,7 +753,7 @@ document.addEventListener('DOMContentLoaded', function () {
         window.history.replaceState({}, '', url);
     }
 
-    document.querySelectorAll('.saas-settings-nav__item').forEach(function (btn) {
+    document.querySelectorAll('.saas-settings-menu .nav-link[data-tab]').forEach(function (btn) {
         btn.addEventListener('click', function () { showTab(btn.dataset.tab); });
     });
 

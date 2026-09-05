@@ -56,7 +56,7 @@
                 <div class="saas-panel__head">
                     <div>
                         <h2 class="saas-panel__title">Basics</h2>
-                        <p class="saas-panel__sub">Title, slug, and SEO metadata for this page.</p>
+                        <p class="saas-panel__sub">Title and slug for this page.</p>
                     </div>
                 </div>
                 <div class="saas-panel__body">
@@ -74,18 +74,6 @@
                         </div>
                         @error('slug')<p class="saas-error">{{ $message }}</p>@enderror
                     </div>
-
-                    <div class="saas-field">
-                        <label class="saas-label" for="meta_title">Meta title</label>
-                        <input class="saas-input @error('meta_title') is-invalid @enderror" id="meta_title" type="text" name="meta_title" value="{{ old('meta_title', $page->meta_title) }}" placeholder="SEO title override">
-                        @error('meta_title')<p class="saas-error">{{ $message }}</p>@enderror
-                    </div>
-
-                    <div class="saas-field">
-                        <label class="saas-label" for="meta_description">Meta description</label>
-                        <textarea class="saas-textarea @error('meta_description') is-invalid @enderror" id="meta_description" name="meta_description" rows="2" placeholder="Short SEO description">{{ old('meta_description', $page->meta_description) }}</textarea>
-                        @error('meta_description')<p class="saas-error">{{ $message }}</p>@enderror
-                    </div>
                 </div>
             </section>
 
@@ -93,13 +81,13 @@
                 <div class="saas-panel__head">
                     <div>
                         <h2 class="saas-panel__title">Content</h2>
-                        <p class="saas-panel__sub">HTML body of the page.</p>
+                        <p class="saas-panel__sub">Page body shown on the public site.</p>
                     </div>
                 </div>
                 <div class="saas-panel__body">
-                    <div class="saas-field">
-                        <label class="saas-label" for="content">HTML <span class="req">*</span></label>
-                        <textarea class="saas-textarea saas-textarea--mono @error('content') is-invalid @enderror" id="content" name="content" rows="14" required placeholder="<p>Page content...</p>">{{ old('content', $page->content) }}</textarea>
+                    <div class="saas-field saas-rich-editor">
+                        <label class="saas-label" for="content">Content <span class="req">*</span></label>
+                        <textarea class="saas-textarea @error('content') is-invalid @enderror" id="content" name="content" rows="14" required data-rich-editor data-rich-height="420" placeholder="Write the page content…">{{ old('content', $page->content) }}</textarea>
                         @error('content')<p class="saas-error">{{ $message }}</p>@enderror
                     </div>
                 </div>
@@ -107,6 +95,12 @@
         </div>
 
         <aside class="saas-side">
+            @include('admin.partials.seo-sidebar', [
+                'metaTitle' => $page->meta_title, 'metaDescription' => $page->meta_description, 'metaKeywords' => $page->meta_keywords,
+                'urlPrefix' => '/page/',
+                'descSources' => ['#content'],
+                'keywordSources' => ['#title','#content'],
+            ])
             <section class="saas-panel saas-panel--side">
                 <div class="saas-panel__head">
                     <h2 class="saas-panel__title">Visibility</h2>
@@ -167,6 +161,8 @@
     </div>
 </form>
 @endsection
+
+@include('admin.partials.tinymce')
 
 @push('scripts')
 <script>

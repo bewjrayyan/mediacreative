@@ -8,6 +8,8 @@ use Illuminate\View\View;
 class UiPageController extends Controller
 {
     private const PAGES = [
+        'sales' => 'admin.ui.sales',
+        'products' => 'admin.ui.products',
         'email' => 'admin.ui.email',
         'compose' => 'admin.ui.compose',
         'calendar' => 'admin.ui.calendar',

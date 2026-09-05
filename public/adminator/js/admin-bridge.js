@@ -164,6 +164,7 @@
     document.querySelectorAll('.dd-profile a.dd-menu-item').forEach(function (a) {
       var text = (a.textContent || '').trim();
       if (text === 'Settings' && u.settingsUrl) a.setAttribute('href', u.settingsUrl);
+      if (text === 'Profile' && u.profileUrl) a.setAttribute('href', u.profileUrl);
       if (text === 'Messages' && u.messagesUrl) a.setAttribute('href', u.messagesUrl);
       if (text === 'Logout') {
         a.setAttribute('href', '#');

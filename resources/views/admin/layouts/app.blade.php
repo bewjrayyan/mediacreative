@@ -99,6 +99,7 @@
         initials: @json($adminInitials ?: 'JD'),
         role: @json(auth()->user()->role ?? 'admin'),
         settingsUrl: @json(route('admin.settings.index')),
+        profileUrl: @json(route('admin.profile.edit')),
         messagesUrl: @json(route('admin.messages.index')),
         homeUrl: @json(route('admin.dashboard')),
         frontendUrl: @json(url('/')),
@@ -136,7 +137,9 @@
     </script>
     <script defer src="{{ asset('adminator/js/runtime.8f81f023.js') }}?v={{ config('app.version') }}"></script>
     <script defer src="{{ asset('adminator/js/2026.d80bdaa4.js') }}?v={{ config('app.version') }}"></script>
+    {{-- seo-sidebar.js: Google preview + auto keywords for admin SEO panels --}}
     <script defer src="{{ asset('adminator/js/admin-bridge.js') }}?v={{ config('app.version') }}"></script>
+    <script defer src="{{ asset('adminator/js/seo-sidebar.js') }}?v={{ config('app.version') }}"></script>
     @stack('scripts')
 </body>
 </html>

@@ -131,7 +131,7 @@
                     @if($project->client)
                         <p class="project-client">{{ __('Client') }}: {{ $project->client }}</p>
                     @endif
-                    <p>{{ Str::limit($project->description, 90) }}</p>
+                    <p>{{ Str::limit(strip_tags($project->description), 90) }}</p>
                     @if(!empty($project->technologies))
                         <div class="project-tech">
                             @foreach(array_slice((array) $project->technologies, 0, 3) as $tech)

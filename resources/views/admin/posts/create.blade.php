@@ -117,13 +117,13 @@
                 <div class="saas-panel__head">
                     <div>
                         <h2 class="saas-panel__title">Content</h2>
-                        <p class="saas-panel__sub">HTML body of the post.</p>
+                        <p class="saas-panel__sub">Post body shown on the public blog.</p>
                     </div>
                 </div>
                 <div class="saas-panel__body">
-                    <div class="saas-field">
-                        <label class="saas-label" for="content">HTML <span class="req">*</span></label>
-                        <textarea class="saas-textarea saas-textarea--mono @error('content') is-invalid @enderror" id="content" name="content" rows="14" required placeholder="<p>Write your post content in HTML...</p>">{{ old('content') }}</textarea>
+                    <div class="saas-field saas-rich-editor">
+                        <label class="saas-label" for="content">Content <span class="req">*</span></label>
+                        <textarea class="saas-textarea @error('content') is-invalid @enderror" id="content" name="content" rows="14" required data-rich-editor data-rich-height="420" placeholder="Write the post content…">{{ old('content') }}</textarea>
                         @error('content')<p class="saas-error">{{ $message }}</p>@enderror
                     </div>
                 </div>
@@ -131,6 +131,12 @@
         </div>
 
         <aside class="saas-side">
+            @include('admin.partials.seo-sidebar', [
+                'metaTitle' => null, 'metaDescription' => null, 'metaKeywords' => null,
+                'urlPrefix' => '/blog/',
+                'descSources' => ['#excerpt','#content'],
+                'keywordSources' => ['#title','#excerpt','#content'],
+            ])
             <section class="saas-panel saas-panel--side">
                 <div class="saas-panel__head">
                     <h2 class="saas-panel__title">Publishing</h2>
@@ -172,6 +178,8 @@
     </div>
 </form>
 @endsection
+
+@include('admin.partials.tinymce')
 
 @push('scripts')
 <script>

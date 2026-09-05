@@ -12,8 +12,11 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        // Append ConfigureSeoDefaults so public pages get SeoManager defaults (artesaos/seotools).
+        // User: "pasang seo tools ini dalam project sekarang https://github.com/artesaos/seotools"
         $middleware->web(append: [
             \App\Http\Middleware\SetLocale::class,
+            \App\Http\Middleware\ConfigureSeoDefaults::class,
         ]);
         $middleware->redirectGuestsTo(fn () => route('admin.login'));
         $middleware->redirectUsersTo(fn () => route('admin.dashboard'));

@@ -10,6 +10,10 @@ class Project extends Model
 {
     use HasFactory, SoftDeletes;
 
+    /**
+     * Includes meta_* for admin SEO sidebar + public SeoManager.
+     * User: pastikan masing masing ada panel meta keyword auto generated...
+     */
     protected $fillable = [
         'title',
         'slug',
@@ -18,6 +22,9 @@ class Project extends Model
         'thumbnail',
         'gallery_images',
         'description',
+        'meta_title',
+        'meta_description',
+        'meta_keywords',
         'technologies',
         'url',
         'is_featured',

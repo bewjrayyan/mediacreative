@@ -81,7 +81,9 @@
 
                     <div class="saas-field">
                         <label class="saas-label" for="description">Description <span class="req">*</span></label>
-                        <textarea class="saas-textarea @error('description') is-invalid @enderror" id="description" name="description" rows="5" required>{{ old('description', $service->description) }}</textarea>
+                        <div class="saas-rich-editor">
+                            <textarea class="saas-textarea @error('description') is-invalid @enderror" id="description" name="description" rows="8" required data-rich-editor data-rich-height="320" placeholder="Describe this service…">{{ old('description', $service->description) }}</textarea>
+                        </div>
                         @error('description')<p class="saas-error">{{ $message }}</p>@enderror
                     </div>
                 </div>
@@ -165,6 +167,12 @@
         </div>
 
         <aside class="saas-side">
+            @include('admin.partials.seo-sidebar', [
+                'metaTitle' => $service->meta_title, 'metaDescription' => $service->meta_description, 'metaKeywords' => $service->meta_keywords,
+                'urlPrefix' => '/services/',
+                'descSources' => ['#description'],
+                'keywordSources' => ['#title','#description','#features_text'],
+            ])
             <section class="saas-panel saas-panel--side">
                 <div class="saas-panel__head">
                     <h2 class="saas-panel__title">Visibility</h2>
@@ -238,6 +246,8 @@
     </div>
 </form>
 @endsection
+
+@include('admin.partials.tinymce')
 
 @push('scripts')
 <script>

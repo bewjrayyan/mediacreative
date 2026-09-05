@@ -201,7 +201,7 @@
                 <div class="project-body">
                     <span class="project-cat">{{ $project->category }}</span>
                     <h3>{{ $project->title }}</h3>
-                    <p>{{ Str::limit($project->description, 80) }}</p>
+                    <p>{{ Str::limit(strip_tags($project->description), 80) }}</p>
                 </div>
             </a>
             @endforeach

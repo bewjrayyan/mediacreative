@@ -20,6 +20,9 @@ class StorePostRequest extends FormRequest
             'cover_image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp,gif', 'max:5120'],
             'content' => ['required', 'string'],
             'excerpt' => ['nullable', 'string', 'max:500'],
+            'meta_title' => ['nullable', 'string', 'max:70'],
+            'meta_description' => ['nullable', 'string', 'max:180'],
+            'meta_keywords' => ['nullable', 'string', 'max:500'],
             'is_published' => ['nullable', 'boolean'],
             'published_at' => ['nullable', 'date'],
         ];

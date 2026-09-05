@@ -10,10 +10,17 @@ class Service extends Model
 {
     use HasFactory, SoftDeletes;
 
+    /**
+     * Includes meta_* for admin SEO sidebar + public SeoManager.
+     * User: pastikan masing masing ada panel meta keyword auto generated...
+     */
     protected $fillable = [
         'title',
         'slug',
         'description',
+        'meta_title',
+        'meta_description',
+        'meta_keywords',
         'icon',
         'image',
         'features',

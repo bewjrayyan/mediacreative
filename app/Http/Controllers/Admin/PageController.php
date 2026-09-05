@@ -29,8 +29,9 @@ class PageController extends Controller
             'title' => ['required', 'string', 'max:255'],
             'slug' => ['nullable', 'string', 'max:255', Rule::unique('pages', 'slug')],
             'content' => ['required', 'string'],
-            'meta_title' => ['nullable', 'string', 'max:255'],
-            'meta_description' => ['nullable', 'string', 'max:500'],
+            'meta_title' => ['nullable', 'string', 'max:70'],
+            'meta_description' => ['nullable', 'string', 'max:180'],
+            'meta_keywords' => ['nullable', 'string', 'max:500'],
             'is_active' => ['nullable', 'boolean'],
         ]);
 
@@ -54,8 +55,9 @@ class PageController extends Controller
             'title' => ['required', 'string', 'max:255'],
             'slug' => ['nullable', 'string', 'max:255', Rule::unique('pages', 'slug')->ignore($page->id)],
             'content' => ['required', 'string'],
-            'meta_title' => ['nullable', 'string', 'max:255'],
-            'meta_description' => ['nullable', 'string', 'max:500'],
+            'meta_title' => ['nullable', 'string', 'max:70'],
+            'meta_description' => ['nullable', 'string', 'max:180'],
+            'meta_keywords' => ['nullable', 'string', 'max:500'],
             'is_active' => ['nullable', 'boolean'],
         ]);
 

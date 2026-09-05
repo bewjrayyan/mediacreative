@@ -10,12 +10,14 @@ class Page extends Model
 {
     use HasFactory, SoftDeletes;
 
+    // Callers: admin SEO sidebar + public SeoManager. User asked for meta keyword/title + Google preview in sidebar.
     protected $fillable = [
         'title',
         'slug',
         'content',
         'meta_title',
         'meta_description',
+        'meta_keywords',
         'is_active',
     ];
 

@@ -22,6 +22,7 @@ class DatabaseSeeder extends Seeder
             PageSettingSeeder::class,
             ContactMessageSeeder::class,
             PageSeeder::class,
+            CalendarEventSeeder::class,
         ]);
     }
 }

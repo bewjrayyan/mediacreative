@@ -3,10 +3,20 @@
 namespace App\Http\Controllers;
 
 use App\Models\Project;
+use App\Services\SeoManager;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
+/**
+ * Routed from routes/web.php (portfolio.*). Uses SeoManager for listing/detail SEO.
+ * User: "pasang seo tools ini dalam project sekarang https://github.com/artesaos/seotools"
+ */
 class PortfolioController extends Controller
 {
+    public function __construct(
+        private readonly SeoManager $seo,
+    ) {}
+
     public function index(Request $request)
     {
         $query = Project::published();
@@ -45,6 +55,17 @@ class PortfolioController extends Controller
                 ->values();
         }
 
+        $shareImage = $previewProjects->first(fn ($p) => filled($p->thumbnail))?->thumbnail
+            ?: $projects->first(fn ($p) => filled($p->thumbnail))?->thumbnail;
+
+        $this->seo->forPage([
+            'title' => 'Portfolio',
+            'description' => 'Selected projects and case studies from '.site_name().'.',
+            'image' => $shareImage,
+            'image_alt' => 'Portfolio — '.site_name(),
+            'url' => route('portfolio.index'),
+        ]);
+
         return view('portfolio.index', compact(
             'projects',
             'categories',
@@ -58,12 +79,24 @@ class PortfolioController extends Controller
     {
         $project = Project::published()->where('slug', $slug)->firstOrFail();
 
-        // Related projects in the same category
         $related = Project::published()
             ->where('category', $project->category)
             ->where('id', '!=', $project->id)
             ->take(3)
             ->get();
+
+        $description = $project->meta_description
+            ?: Str::limit(strip_tags((string) $project->description), 160);
+
+        $this->seo->forPage([
+            'title' => $project->meta_title ?: $project->title,
+            'description' => $description,
+            'keywords' => $project->meta_keywords,
+            'image' => $project->thumbnail,
+            'image_alt' => $project->meta_title ?: $project->title,
+            'url' => route('portfolio.show', $project->slug),
+            'type' => 'article',
+        ]);
 
         return view('portfolio.show', compact('project', 'related'));
     }

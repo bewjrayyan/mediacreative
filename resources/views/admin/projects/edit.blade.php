@@ -126,10 +126,11 @@
                     <span class="saas-hint" id="descCount">0</span>
                 </div>
                 <div class="saas-panel__body">
-                    <div class="saas-field">
+                    <div class="saas-field saas-rich-editor">
                         <label class="saas-label" for="description">Write-up <span class="req">*</span></label>
-                        <textarea class="saas-input saas-textarea @error('description') is-invalid @enderror" id="description" name="description" rows="8" required placeholder="What did you build, for whom, and what changed?">{{ old('description', $project->description) }}</textarea>
+                        <textarea class="saas-textarea @error('description') is-invalid @enderror" id="description" name="description" rows="8" required data-rich-editor placeholder="What did you build, for whom, and what changed?">{{ old('description', $project->description) }}</textarea>
                         @error('description')<p class="saas-error">{{ $message }}</p>@enderror
+                        <p class="saas-help">Use headings, lists, and links. Content is saved as HTML.</p>
                     </div>
                 </div>
             </section>
@@ -231,6 +232,12 @@
 
         {{-- Sticky sidebar --}}
         <aside class="saas-side">
+            @include('admin.partials.seo-sidebar', [
+                'metaTitle' => $project->meta_title, 'metaDescription' => $project->meta_description, 'metaKeywords' => $project->meta_keywords,
+                'urlPrefix' => '/portfolio/',
+                'descSources' => ['#description'],
+                'keywordSources' => ['#title','#category','#description','#technologies_input'],
+            ])
             <section class="saas-panel saas-panel--side">
                 <div class="saas-panel__head">
                     <h2 class="saas-panel__title">Publishing</h2>
@@ -315,6 +322,7 @@
 </form>
 @endsection
 
+@include('admin.partials.tinymce')
 
 @push('scripts')
 <script>
@@ -340,8 +348,15 @@ document.addEventListener('DOMContentLoaded', function () {
   function syncClient() {
     document.getElementById('previewClient').textContent = clientInput.value.trim() || 'No client set';
   }
-  function syncDescCount() {
-    document.getElementById('descCount').textContent = descInput.value.length.toLocaleString() + ' chars';
+  function syncDescCount(editor) {
+    var text = '';
+    if (editor && editor.getContent) {
+      text = editor.getContent({ format: 'text' }) || '';
+    } else if (descInput) {
+      text = descInput.value.replace(/<[^>]*>/g, ' ') || '';
+    }
+    text = text.replace(/\s+/g, ' ').trim();
+    document.getElementById('descCount').textContent = text.length.toLocaleString() + ' chars';
   }
   function syncTechTags() {
     const tags = techInput.value.split(',').map(t => t.trim()).filter(Boolean);
@@ -366,11 +381,18 @@ document.addEventListener('DOMContentLoaded', function () {
   titleInput.addEventListener('input', syncTitle);
   categoryInput.addEventListener('change', syncCategory);
   clientInput.addEventListener('input', syncClient);
-  descInput.addEventListener('input', syncDescCount);
+  descInput.addEventListener('input', function () { syncDescCount(); });
   techInput.addEventListener('input', syncTechTags);
   statusToggle.addEventListener('change', syncStatus);
   featuredToggle.addEventListener('change', syncFeatured);
   syncTitle(); syncCategory(); syncClient(); syncDescCount(); syncTechTags(); syncStatus(); syncFeatured();
+
+  if (typeof window.initSaasRichEditor === 'function') {
+    window.initSaasRichEditor('#description', {
+      height: 380,
+      onUpdate: function (editor) { syncDescCount(editor); }
+    });
+  }
 
   // Dropzone preview helpers
   function bindFilePreview(input) {
@@ -412,6 +434,9 @@ document.addEventListener('DOMContentLoaded', function () {
   document.querySelectorAll('.saas-dropzone__input').forEach(bindFilePreview);
 
   form.addEventListener('submit', function () {
+    if (window.tinymce) {
+      window.tinymce.triggerSave();
+    }
     // Clear previous hidden tech fields
     form.querySelectorAll('input[name="technologies[]"]').forEach(el => el.remove());
     const techs = techInput.value.split(',').map(t => t.trim()).filter(Boolean);
