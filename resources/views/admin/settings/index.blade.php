@@ -15,6 +15,7 @@
         'seo' => ['label' => 'SEO', 'hint' => 'Search & share'],
         'home' => ['label' => 'Homepage', 'hint' => 'Hero & CTA'],
         'services_page' => ['label' => 'Services page', 'hint' => 'Flow & tech'],
+        'portfolio_page' => ['label' => 'Portfolio page', 'hint' => 'Hero & CTA'],
         'footer' => ['label' => 'Footer', 'hint' => 'Copyright & links'],
         'cache' => ['label' => 'Clear cache', 'hint' => 'Refresh admin UI'],
         'updates' => ['label' => 'Updates', 'hint' => 'GitHub deploy'],
@@ -415,6 +416,91 @@
                             <div class="saas-field">
                                 <label class="saas-label" for="services_bottom_cta_button">Bottom CTA button</label>
                                 <input class="saas-input" id="services_bottom_cta_button" type="text" name="services_bottom_cta_button" value="{{ old('services_bottom_cta_button', $allSettings['services_bottom_cta_button'] ?? '') }}">
+                            </div>
+                        </div>
+                    </section>
+                </div>
+
+                {{-- Portfolio page --}}
+                <div class="saas-settings-panel" data-panel="portfolio_page" @if($activeTab !== 'portfolio_page') hidden @endif>
+                    <section class="saas-panel">
+                        <div class="saas-panel__head">
+                            <div>
+                                <h2 class="saas-panel__title">Portfolio page</h2>
+                                <p class="saas-panel__sub">Hero copy, gallery labels, and bottom CTA on <code>/portfolio</code>. Project cards themselves are managed under <a href="{{ route('admin.projects.index') }}">Projects</a>.</p>
+                            </div>
+                        </div>
+                        <div class="saas-panel__body">
+                            <div class="saas-field">
+                                <label class="saas-label" for="portfolio_kicker">Hero kicker</label>
+                                <input class="saas-input" id="portfolio_kicker" type="text" name="portfolio_kicker" value="{{ old('portfolio_kicker', $allSettings['portfolio_kicker'] ?? '') }}">
+                            </div>
+                            <div class="saas-field">
+                                <label class="saas-label" for="portfolio_title">Hero title</label>
+                                <input class="saas-input" id="portfolio_title" type="text" name="portfolio_title" value="{{ old('portfolio_title', $allSettings['portfolio_title'] ?? '') }}">
+                            </div>
+                            <div class="saas-field">
+                                <label class="saas-label" for="portfolio_lead">Hero lead</label>
+                                <textarea class="saas-textarea" id="portfolio_lead" name="portfolio_lead" rows="3">{{ old('portfolio_lead', $allSettings['portfolio_lead'] ?? '') }}</textarea>
+                            </div>
+
+                            <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px">
+                                <div class="saas-field">
+                                    <label class="saas-label" for="portfolio_primary_cta_text">Primary CTA label</label>
+                                    <input class="saas-input" id="portfolio_primary_cta_text" type="text" name="portfolio_primary_cta_text" value="{{ old('portfolio_primary_cta_text', $allSettings['portfolio_primary_cta_text'] ?? '') }}">
+                                </div>
+                                <div class="saas-field">
+                                    <label class="saas-label" for="portfolio_primary_cta_link">Primary CTA link</label>
+                                    <input class="saas-input" id="portfolio_primary_cta_link" type="text" name="portfolio_primary_cta_link" value="{{ old('portfolio_primary_cta_link', $allSettings['portfolio_primary_cta_link'] ?? '/contact') }}" placeholder="/contact">
+                                </div>
+                                <div class="saas-field">
+                                    <label class="saas-label" for="portfolio_secondary_cta_text">Secondary CTA label</label>
+                                    <input class="saas-input" id="portfolio_secondary_cta_text" type="text" name="portfolio_secondary_cta_text" value="{{ old('portfolio_secondary_cta_text', $allSettings['portfolio_secondary_cta_text'] ?? '') }}">
+                                </div>
+                                <div class="saas-field">
+                                    <label class="saas-label" for="portfolio_secondary_cta_link">Secondary CTA link</label>
+                                    <input class="saas-input" id="portfolio_secondary_cta_link" type="text" name="portfolio_secondary_cta_link" value="{{ old('portfolio_secondary_cta_link', $allSettings['portfolio_secondary_cta_link'] ?? '/services') }}" placeholder="/services">
+                                </div>
+                            </div>
+
+                            <hr class="saas-divider" style="margin:28px 0;border:0;border-top:1px solid var(--border,#E4E8EF)">
+
+                            <div class="saas-field">
+                                <label class="saas-label" for="portfolio_gallery_heading">Gallery heading (All)</label>
+                                <input class="saas-input" id="portfolio_gallery_heading" type="text" name="portfolio_gallery_heading" value="{{ old('portfolio_gallery_heading', $allSettings['portfolio_gallery_heading'] ?? '') }}">
+                            </div>
+                            <div class="saas-field">
+                                <label class="saas-label" for="portfolio_gallery_subheading">Gallery subheading (All)</label>
+                                <input class="saas-input" id="portfolio_gallery_subheading" type="text" name="portfolio_gallery_subheading" value="{{ old('portfolio_gallery_subheading', $allSettings['portfolio_gallery_subheading'] ?? '') }}">
+                            </div>
+                            <div class="saas-field">
+                                <label class="saas-label" for="portfolio_gallery_filtered_subheading">Gallery subheading (filtered)</label>
+                                <input class="saas-input" id="portfolio_gallery_filtered_subheading" type="text" name="portfolio_gallery_filtered_subheading" value="{{ old('portfolio_gallery_filtered_subheading', $allSettings['portfolio_gallery_filtered_subheading'] ?? '') }}">
+                            </div>
+
+                            <hr class="saas-divider" style="margin:28px 0;border:0;border-top:1px solid var(--border,#E4E8EF)">
+
+                            <div class="saas-field">
+                                <label class="saas-label" for="portfolio_cta_eyebrow">Bottom CTA eyebrow</label>
+                                <input class="saas-input" id="portfolio_cta_eyebrow" type="text" name="portfolio_cta_eyebrow" value="{{ old('portfolio_cta_eyebrow', $allSettings['portfolio_cta_eyebrow'] ?? '') }}">
+                            </div>
+                            <div class="saas-field">
+                                <label class="saas-label" for="portfolio_cta_title">Bottom CTA title</label>
+                                <input class="saas-input" id="portfolio_cta_title" type="text" name="portfolio_cta_title" value="{{ old('portfolio_cta_title', $allSettings['portfolio_cta_title'] ?? '') }}">
+                            </div>
+                            <div class="saas-field">
+                                <label class="saas-label" for="portfolio_cta_body">Bottom CTA body</label>
+                                <textarea class="saas-textarea" id="portfolio_cta_body" name="portfolio_cta_body" rows="3">{{ old('portfolio_cta_body', $allSettings['portfolio_cta_body'] ?? '') }}</textarea>
+                            </div>
+                            <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px">
+                                <div class="saas-field">
+                                    <label class="saas-label" for="portfolio_cta_button">Bottom CTA button</label>
+                                    <input class="saas-input" id="portfolio_cta_button" type="text" name="portfolio_cta_button" value="{{ old('portfolio_cta_button', $allSettings['portfolio_cta_button'] ?? '') }}">
+                                </div>
+                                <div class="saas-field">
+                                    <label class="saas-label" for="portfolio_cta_link">Bottom CTA link</label>
+                                    <input class="saas-input" id="portfolio_cta_link" type="text" name="portfolio_cta_link" value="{{ old('portfolio_cta_link', $allSettings['portfolio_cta_link'] ?? '/contact') }}" placeholder="/contact">
+                                </div>
                             </div>
                         </div>
                     </section>

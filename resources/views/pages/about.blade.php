@@ -91,9 +91,21 @@
 <section class="section">
     <div class="container">
         <div class="cta-banner">
-            <h2>{{ __('Want to Work With Us?') }}</h2>
-            <p>{{ __("We're always looking for new challenges and exciting projects.") }}</p>
-            <a href="{{ route('contact.index') }}" class="btn btn-light btn-lg">{{ __('Get in Touch') }}</a>
+            <span class="cta-banner__glow cta-banner__glow--a" aria-hidden="true"></span>
+            <span class="cta-banner__glow cta-banner__glow--b" aria-hidden="true"></span>
+            <span class="cta-banner__glow cta-banner__glow--c" aria-hidden="true"></span>
+            <span class="cta-banner__grid" aria-hidden="true"></span>
+            <div class="cta-banner__inner">
+                <p class="cta-banner__eyebrow">{{ __('Start a Project') }}</p>
+                <h2>{{ __('Want to Work With Us?') }}</h2>
+                <p>{{ __("We're always looking for new challenges and exciting projects.") }}</p>
+                <div class="cta-banner__actions">
+                    <a href="{{ route('contact.index') }}" class="btn btn-primary btn-lg">
+                        {{ __('Get in Touch') }}
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg>
+                    </a>
+                </div>
+            </div>
         </div>
     </div>
 </section>

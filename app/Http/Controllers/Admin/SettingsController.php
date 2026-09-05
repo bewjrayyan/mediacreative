@@ -86,6 +86,25 @@ class SettingsController extends Controller
             'services_bottom_cta_button',
         ]));
 
+        // Handle portfolio page (hero, gallery labels, bottom CTA)
+        $this->updateGroup('portfolio_page', $request->only([
+            'portfolio_kicker',
+            'portfolio_title',
+            'portfolio_lead',
+            'portfolio_primary_cta_text',
+            'portfolio_primary_cta_link',
+            'portfolio_secondary_cta_text',
+            'portfolio_secondary_cta_link',
+            'portfolio_gallery_heading',
+            'portfolio_gallery_subheading',
+            'portfolio_gallery_filtered_subheading',
+            'portfolio_cta_eyebrow',
+            'portfolio_cta_title',
+            'portfolio_cta_body',
+            'portfolio_cta_button',
+            'portfolio_cta_link',
+        ]));
+
         Cache::forget('page_settings');
         Cache::forget('page_settings_v2');
 

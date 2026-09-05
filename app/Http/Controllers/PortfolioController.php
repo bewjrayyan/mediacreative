@@ -19,7 +19,39 @@ class PortfolioController extends Controller
 
         $projects = $query->ordered()->paginate(9)->withQueryString();
 
-        return view('portfolio.index', compact('projects', 'categories'));
+        $totalProjects = Project::published()->count();
+        $categoryCounts = Project::published()
+            ->selectRaw('category, COUNT(*) as total')
+            ->groupBy('category')
+            ->pluck('total', 'category');
+
+        $previewProjects = Project::published()
+            ->whereNotNull('thumbnail')
+            ->where('thumbnail', '!=', '')
+            ->ordered()
+            ->take(3)
+            ->get();
+
+        if ($previewProjects->count() < 3) {
+            $previewProjects = $previewProjects
+                ->concat(
+                    Project::published()
+                        ->ordered()
+                        ->take(3)
+                        ->get()
+                )
+                ->unique('id')
+                ->take(3)
+                ->values();
+        }
+
+        return view('portfolio.index', compact(
+            'projects',
+            'categories',
+            'totalProjects',
+            'categoryCounts',
+            'previewProjects'
+        ));
     }
 
     public function show(string $slug)

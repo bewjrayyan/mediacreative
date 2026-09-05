@@ -88,6 +88,24 @@ When we are, we\'ll plan, design, develop, publish and deploy apps and admin das
             ['key' => 'services_bottom_cta_body', 'value' => 'Every business deserves digital products that retain customers and create real value. We\'re here to help with a free consultation on where and how to start.', 'group' => 'services_page'],
             ['key' => 'services_bottom_cta_button', 'value' => 'Send enquiry', 'group' => 'services_page'],
 
+            // ── Portfolio page ─────────────────────────────
+            ['key' => 'portfolio_kicker', 'value' => 'Portfolio', 'group' => 'portfolio_page'],
+            ['key' => 'portfolio_title', 'value' => 'Our Work', 'group' => 'portfolio_page'],
+            ['key' => 'portfolio_lead', 'value' => 'Explore our portfolio of successful projects for clients across various industries.', 'group' => 'portfolio_page'],
+            ['key' => 'portfolio_primary_cta_text', 'value' => 'Start a Project', 'group' => 'portfolio_page'],
+            ['key' => 'portfolio_primary_cta_link', 'value' => '/contact', 'group' => 'portfolio_page'],
+            ['key' => 'portfolio_secondary_cta_text', 'value' => 'Our Services', 'group' => 'portfolio_page'],
+            ['key' => 'portfolio_secondary_cta_link', 'value' => '/services', 'group' => 'portfolio_page'],
+            ['key' => 'portfolio_category_heading', 'value' => 'Browse by category', 'group' => 'portfolio_page'],
+            ['key' => 'portfolio_gallery_heading', 'value' => 'Selected Work', 'group' => 'portfolio_page'],
+            ['key' => 'portfolio_gallery_subheading', 'value' => 'Filter by type, then open a case study.', 'group' => 'portfolio_page'],
+            ['key' => 'portfolio_gallery_filtered_subheading', 'value' => 'Showing projects in this category.', 'group' => 'portfolio_page'],
+            ['key' => 'portfolio_cta_eyebrow', 'value' => 'Start a Project', 'group' => 'portfolio_page'],
+            ['key' => 'portfolio_cta_title', 'value' => 'Have a Project in Mind?', 'group' => 'portfolio_page'],
+            ['key' => 'portfolio_cta_body', 'value' => "Let's discuss how we can help bring your vision to life.", 'group' => 'portfolio_page'],
+            ['key' => 'portfolio_cta_button', 'value' => 'Start Your Project', 'group' => 'portfolio_page'],
+            ['key' => 'portfolio_cta_link', 'value' => '/contact', 'group' => 'portfolio_page'],
+
             // ── Footer ──────────────────────────────────────
             ['key' => 'copyright', 'value' => '© 2026 DesignPro. All rights reserved.', 'group' => 'footer'],
             ['key' => 'quick_links', 'value' => '{"Services":"/services","Portfolio":"/portfolio","About":"/about","Blog":"/blog","Contact":"/contact"}', 'group' => 'footer'],
