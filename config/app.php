@@ -1,5 +1,12 @@
 <?php
 
+$applicationUrl = rtrim((string) env('APP_URL', 'http://localhost'), '/');
+
+// The local XAMPP checkout uses /adminator, while production is served at the domain root.
+if (env('APP_ENV', 'production') === 'production') {
+    $applicationUrl = (string) preg_replace('#/adminator$#', '', $applicationUrl);
+}
+
 return [
 
     /*
@@ -64,7 +71,7 @@ return [
     |
     */
 
-    'url' => env('APP_URL', 'http://localhost'),
+    'url' => $applicationUrl,
 
     /*
     |--------------------------------------------------------------------------
