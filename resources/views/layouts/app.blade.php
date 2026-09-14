@@ -3471,12 +3471,25 @@
                 {{ setting('site_name', 'DesignPro') }}
             </a>
             <div class="nav-links" id="navLinks">
-                <a href="{{ route('home') }}" class="{{ request()->routeIs('home') ? 'active' : '' }}">{{ __('Home') }}</a>
-                <a href="{{ route('services.index') }}" class="{{ request()->routeIs('services.*') ? 'active' : '' }}">{{ __('Services') }}</a>
-                <a href="{{ route('portfolio.index') }}" class="{{ request()->routeIs('portfolio.*') ? 'active' : '' }}">{{ __('Portfolio') }}</a>
-                <a href="{{ route('about') }}" class="{{ request()->routeIs('about') ? 'active' : '' }}">{{ __('About') }}</a>
-                <a href="{{ route('blog.index') }}" class="{{ request()->routeIs('blog.*') ? 'active' : '' }}">{{ __('Blog') }}</a>
-                <a href="{{ route('contact.index') }}" class="{{ request()->routeIs('contact.*') ? 'active' : '' }}">{{ __('Contact') }}</a>
+                @php
+                    $defaultHeaderMenu = [
+                        ['label' => __('Home'), 'url' => route('home')],
+                        ['label' => __('Services'), 'url' => route('services.index')],
+                        ['label' => __('Portfolio'), 'url' => route('portfolio.index')],
+                        ['label' => __('About'), 'url' => route('about')],
+                        ['label' => __('Blog'), 'url' => route('blog.index')],
+                        ['label' => __('Contact'), 'url' => route('contact.index')],
+                    ];
+                    $renderHeaderMenu = $headerMenuItems->isNotEmpty() ? $headerMenuItems : collect($defaultHeaderMenu);
+                @endphp
+                @foreach($renderHeaderMenu as $item)
+                    @php
+                        $itemUrl = is_object($item) ? $item->resolved_url : $item['url'];
+                        $itemLabel = is_object($item) ? $item->label : $item['label'];
+                        $itemPath = parse_url($itemUrl, PHP_URL_PATH) ?: '/';
+                    @endphp
+                    <a href="{{ $itemUrl }}" class="{{ $itemPath === request()->getPathInfo() ? 'active' : '' }}">{{ $itemLabel }}</a>
+                @endforeach
             </div>
             <div class="nav-cta">
                 @php
@@ -3591,10 +3604,22 @@
                 </div>
                 <div>
                     <h4>{{ __('Company') }}</h4>
-                    <a href="{{ route('about') }}">{{ __('About Us') }}</a>
-                    <a href="{{ route('portfolio.index') }}">{{ __('Portfolio') }}</a>
-                    <a href="{{ route('blog.index') }}">{{ __('Blog') }}</a>
-                    <a href="{{ route('contact.index') }}">{{ __('Contact') }}</a>
+                    @php
+                        $defaultFooterMenu = [
+                            ['label' => __('About Us'), 'url' => route('about')],
+                            ['label' => __('Portfolio'), 'url' => route('portfolio.index')],
+                            ['label' => __('Blog'), 'url' => route('blog.index')],
+                            ['label' => __('Contact'), 'url' => route('contact.index')],
+                        ];
+                        $renderFooterMenu = $footerMenuItems->isNotEmpty() ? $footerMenuItems : collect($defaultFooterMenu);
+                    @endphp
+                    @foreach($renderFooterMenu as $item)
+                        @php
+                            $itemUrl = is_object($item) ? $item->resolved_url : $item['url'];
+                            $itemLabel = is_object($item) ? $item->label : $item['label'];
+                        @endphp
+                        <a href="{{ $itemUrl }}">{{ $itemLabel }}</a>
+                    @endforeach
                     @foreach(\App\Models\Page::active()->take(3)->get() as $page)
                         <a href="{{ route('pages.show', $page->slug) }}">{{ $page->title }}</a>
                     @endforeach

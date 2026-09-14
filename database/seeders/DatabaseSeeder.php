@@ -23,7 +23,7 @@ class DatabaseSeeder extends Seeder
             ContactMessageSeeder::class,
             PageSeeder::class,
             CalendarEventSeeder::class,
+            MenuItemSeeder::class,
         ]);
     }
 }
-

@@ -44,7 +44,7 @@
                             <div class="saas-table__name">{{ $page->title }}</div>
                         </td>
                         <td>
-                            <a href="{{ route('pages.show', $page->slug) }}" target="_blank" rel="noopener" style="color:var(--primary);text-decoration:none">/{{ $page->slug }} →</a>
+                            <a href="{{ $page->slug === 'about' ? route('about') : route('pages.show', $page->slug) }}" target="_blank" rel="noopener" style="color:var(--primary);text-decoration:none">/{{ $page->slug }} →</a>
                         </td>
                         <td>
                             <span class="saas-status {{ $page->is_active ? 'is-live' : 'is-draft' }}">
