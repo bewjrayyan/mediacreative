@@ -33,6 +33,14 @@
         .delete-form { display: inline; }
         .auth-body { background: var(--bg-body); min-height: 100vh; display: grid; place-items: center; padding: 24px; }
         .auth-card-custom { width: 100%; max-width: 420px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 18px; padding: 36px; box-shadow: var(--shadow-lg); }
+
+        /* Modal component */
+        .saas-modal {
+            position: fixed; inset: 0; z-index: 9999; display: none; place-items: center;
+            padding: 24px; background: rgba(15, 23, 42, 0.75); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+        }
+        .saas-modal.is-open { display: grid !important; }
+        .saas-modal[hidden] { display: none !important; }
     </style>
     @stack('styles')
 </head>
@@ -90,9 +98,30 @@
         );
         $adminLogoPath = setting('logo');
         $adminLogoUrl = $adminLogoPath ? asset('storage/' . ltrim((string) $adminLogoPath, '/')) : null;
+        $allModulesList = \App\Models\Module::get()->map(function ($mod) {
+            $url = \Illuminate\Support\Facades\Route::has('admin.' . $mod->slug . '.index')
+                ? route('admin.' . $mod->slug . '.index')
+                : ($mod->slug === 'lead-form' ? route('admin.leads.index') : route('admin.modules.index'));
+            return [
+                'id' => $mod->id,
+                'slug' => $mod->slug,
+                'name' => $mod->name,
+                'icon' => $mod->icon,
+                'category' => $mod->category,
+                'status' => $mod->status,
+                'version' => $mod->version,
+                'url' => $url,
+            ];
+        })->toArray();
+        $activeModulesList = collect($allModulesList)->where('status', 'active')->values()->toArray();
     @endphp
     <script>
       window.ADMINATOR_BASE_PATH = @json(rtrim(parse_url(url('/'), PHP_URL_PATH) ?: '', '/'));
+      window.ADMINATOR_MODULES = @json($activeModulesList);
+      window.ADMINATOR_ACTIVE_MODULES = @json($activeModulesList);
+      window.ADMINATOR_ALL_MODULES = @json($allModulesList);
+      window.ADMINATOR_MODULES_INDEX_URL = @json(route('admin.modules.index'));
+      window.ADMINATOR_LEADS_INDEX_URL = @json(route('admin.leads.index'));
       window.ADMINATOR_USER = {
         name: @json($adminName),
         email: @json(auth()->user()->email ?? 'john@adminator.app'),
@@ -127,6 +156,8 @@
         '500.html': @json(url('/admin/errors/500')),
         'signin.html': @json(route('admin.login')),
         'signup.html': @json(url('/admin/signup')),
+        'modules': @json(route('admin.modules.index')),
+        'leads': @json(route('admin.leads.index')),
       };
       window.ADMINATOR_API = {
         stats: @json(url('/api/admin/stats')),
@@ -134,6 +165,35 @@
         messagesChart: @json(url('/api/admin/messages/chart')),
         csrf: document.querySelector('meta[name="csrf-token"]')?.content,
       };
+
+      window.openSaasModal = function (id) {
+        var modal = document.getElementById(id);
+        if (modal) {
+          modal.classList.add('is-open');
+          modal.removeAttribute('hidden');
+          document.body.style.overflow = 'hidden';
+        }
+      };
+      window.closeSaasModal = function (id) {
+        var modal = document.getElementById(id);
+        if (modal) {
+          modal.classList.remove('is-open');
+          modal.setAttribute('hidden', '');
+          document.body.style.overflow = '';
+        }
+      };
+      document.addEventListener('click', function (e) {
+        if (e.target && e.target.classList && e.target.classList.contains('saas-modal')) {
+          window.closeSaasModal(e.target.id);
+        }
+      });
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') {
+          document.querySelectorAll('.saas-modal.is-open').forEach(function (m) {
+            window.closeSaasModal(m.id);
+          });
+        }
+      });
     </script>
     <script defer src="{{ asset('adminator/js/runtime.8f81f023.js') }}?v={{ config('app.version') }}"></script>
     <script defer src="{{ asset('adminator/js/2026.d80bdaa4.js') }}?v={{ config('app.version') }}"></script>

@@ -6,6 +6,8 @@ use App\Http\Controllers\Admin\CalendarController;
 use App\Http\Controllers\Admin\ClientController;
 use App\Http\Controllers\Admin\ContactMessageController;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\ModuleController;
+use App\Http\Controllers\Admin\LeadController;
 use App\Http\Controllers\Admin\PageController as AdminPageController;
 use App\Http\Controllers\Admin\PostController as AdminPostController;
 use App\Http\Controllers\Admin\ProfileController;
@@ -150,6 +152,21 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::post('settings/updates/pull', [SystemUpdateController::class, 'pull'])->name('settings.updates.pull');
         Route::post('settings/updates/maintenance', [SystemUpdateController::class, 'maintenance'])->name('settings.updates.maintenance');
         Route::post('settings/cache/clear', [SystemUpdateController::class, 'clearCache'])->name('settings.cache.clear');
+
+        // Modules Management System (WordPress Plugin Installer Concept)
+        Route::get('modules', [ModuleController::class, 'index'])->name('modules.index');
+        Route::post('modules', [ModuleController::class, 'uploadZip'])->name('modules.store');
+        Route::post('modules/upload', [ModuleController::class, 'uploadZip'])->name('modules.upload');
+        Route::get('modules/sample-zip', [ModuleController::class, 'downloadSampleZip'])->name('modules.sample-zip');
+        Route::post('modules/{module}/install', [ModuleController::class, 'install'])->name('modules.install');
+        Route::post('modules/{module}/uninstall', [ModuleController::class, 'uninstall'])->name('modules.uninstall');
+        Route::patch('modules/{module}/toggle', [ModuleController::class, 'toggle'])->name('modules.toggle');
+        Route::delete('modules/{module}', [ModuleController::class, 'destroy'])->name('modules.destroy');
+
+        // Lead Form Module (CRUD & Excel Import)
+        Route::get('leads/sample-template', [LeadController::class, 'downloadSample'])->name('leads.sample-template');
+        Route::post('leads/import', [LeadController::class, 'import'])->name('leads.import');
+        Route::resource('leads', LeadController::class)->except('show');
 
         // CMS Pages
         Route::resource('pages', AdminPageController::class)->except('show');

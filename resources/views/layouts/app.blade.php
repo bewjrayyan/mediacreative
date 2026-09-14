@@ -2896,8 +2896,60 @@
         .pagination .disabled .page-link { opacity: .5; cursor: not-allowed; }
 
         /* Project gallery */
-        .gallery-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin: 30px 0; }
+        .pf-gallery-wrap { margin: 30px 0; }
+        .pf-gallery-head { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 16px; }
+        .pf-gallery-head h2 { margin: 0; }
+        .pf-gallery-nav { display: flex; align-items: center; gap: 10px; }
+        .pf-gallery-counter { font-size: 13px; font-weight: 600; color: var(--text-muted); font-variant-numeric: tabular-nums; }
+        .pf-gallery-btn {
+            width: 34px; height: 34px; border-radius: 10px; border: 1px solid var(--border);
+            background: var(--bg); color: var(--dark); display: grid; place-items: center;
+            cursor: pointer; transition: all .2s ease;
+        }
+        .pf-gallery-btn:hover:not(:disabled) { border-color: var(--primary); color: var(--primary); background: var(--primary-light); }
+        .pf-gallery-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+        .gallery-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin: 0; }
         .gallery-grid img { border-radius: 12px; height: 220px; object-fit: cover; width: 100%; display: block; }
+        .pf-gallery-dots { display: flex; justify-content: center; align-items: center; gap: 6px; margin-top: 16px; }
+        .pf-gallery-dot {
+            width: 8px; height: 8px; border-radius: 999px; border: 0; padding: 0;
+            background: var(--border-dark, rgba(15,23,42,0.2)); cursor: pointer;
+            transition: all .25s ease;
+        }
+        .pf-gallery-dot.is-active { width: 22px; background: var(--primary); }
+
+        @media (min-width: 769px) {
+            .pf-gallery-nav, .pf-gallery-dots { display: none !important; }
+        }
+
+        @media (max-width: 768px) {
+            .gallery-grid {
+                display: flex !important;
+                flex-direction: row !important;
+                grid-template-columns: none !important;
+                overflow-x: auto !important;
+                scroll-snap-type: x mandatory !important;
+                scroll-behavior: smooth;
+                -webkit-overflow-scrolling: touch;
+                gap: 12px !important;
+                scrollbar-width: none;
+                margin-inline: calc(var(--page-gutter, 16px) * -1);
+                padding-inline: var(--page-gutter, 16px);
+                padding-bottom: 6px;
+            }
+            .gallery-grid::-webkit-scrollbar { display: none; }
+            .gallery-grid .img-zoom {
+                flex: 0 0 85% !important;
+                max-width: 85% !important;
+                scroll-snap-align: center;
+                scroll-snap-stop: always;
+                border-radius: 14px !important;
+            }
+            .gallery-grid img {
+                height: 230px !important;
+                border-radius: 14px !important;
+            }
+        }
         .blog-single .cover img { width: 100%; display: block; }
         .img-zoom {
           display: block; width: 100%; padding: 0; margin: 0; border: 0; background: transparent;
@@ -2981,14 +3033,12 @@
             .services-grid, .portfolio-grid, .testimonial-grid, .blog-grid, .values-grid { grid-template-columns: 1fr; }
             .team-grid { grid-template-columns: 1fr 1fr; }
             .footer-grid { grid-template-columns: 1fr 1fr; }
-            .gallery-grid { grid-template-columns: 1fr 1fr; }
             .section { padding: 60px 0; }
             .hero { padding: 70px 0; }
         }
         @media (max-width: 600px) {
             .team-grid { grid-template-columns: 1fr; }
             .footer-grid { grid-template-columns: 1fr; }
-            .gallery-grid { grid-template-columns: 1fr; }
             .hero-stats { gap: 24px; flex-wrap: wrap; }
         }
 
@@ -3415,7 +3465,7 @@
                     @if($siteLogoUrl)
                         <img src="{{ $siteLogoUrl }}" alt="{{ setting('site_name', 'DesignPro') }}">
                     @else
-                        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#fff" stroke-width="2.4"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5z"/><circle cx="11" cy="11" r="2"/></svg>
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#fff" stroke-width="2.4"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5z"/><circle cx="11" cy="11" r="2"/></svg>
                     @endif
                 </span>
                 {{ setting('site_name', 'DesignPro') }}
