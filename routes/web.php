@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\ClientController;
 use App\Http\Controllers\Admin\ContactMessageController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\PageController as AdminPageController;
+use App\Http\Controllers\Admin\MenuItemController;
 use App\Http\Controllers\Admin\PostController as AdminPostController;
 use App\Http\Controllers\Admin\ProfileController;
 use App\Http\Controllers\Admin\ProjectController as AdminProjectController;
@@ -153,5 +154,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
         // CMS Pages
         Route::resource('pages', AdminPageController::class)->except('show');
+        Route::resource('menu', MenuItemController::class)
+            ->except('show')
+            ->parameters(['menu' => 'menuItem']);
     });
 });

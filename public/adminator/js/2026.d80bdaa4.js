@@ -56,6 +56,8 @@ const NAV = [
         icon: '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/>' },
       { key: 'cms-pages', text: 'CMS Pages', href: '/admin/pages',
         icon: '<rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18"/>' },
+      { key: 'frontend-menu', text: 'Frontend Menu', href: '/adminator/admin/menu',
+        icon: '<path d="M4 6h16M4 12h16M4 18h16"/>' },
     ],
   },
   {

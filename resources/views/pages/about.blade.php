@@ -1,28 +1,20 @@
 @extends('layouts.app')
 
-@section('title', __('About Us') . ' - ' . setting('site_name', 'DesignPro'))
+@section('title', ($page->meta_title ?: $page->title) . ' - ' . setting('site_name', 'DesignPro'))
+@section('meta_description', $page->meta_description)
 
 @section('content')
 <section class="page-hero">
     <div class="container">
-        <h1>{{ __('About :name', ['name' => setting('site_name', 'DesignPro')]) }}</h1>
-        <p>{{ __("We're a team of passionate designers and developers dedicated to creating exceptional digital experiences.") }}</p>
+        <h1>{{ $page->title }}</h1>
+        <p>{{ $page->meta_description ?: __("We're a team of passionate designers and developers dedicated to creating exceptional digital experiences.") }}</p>
     </div>
 </section>
 
 <section class="section">
     <div class="container">
         <div style="max-width:720px;margin:0 auto">
-            <h2 style="font-size:26px;margin-bottom:16px">{{ __('Our Story') }}</h2>
-            <p style="font-size:17px;color:var(--text-light);margin-bottom:18px">
-                {{ __('About story p1', ['name' => setting('site_name', 'DesignPro')]) }}
-            </p>
-            <p style="font-size:17px;color:var(--text-light);margin-bottom:18px">
-                {{ __('About story p2') }}
-            </p>
-            <p style="font-size:17px;color:var(--text-light)">
-                {{ __('About story p3') }}
-            </p>
+            <div class="blog-content">{!! $page->content !!}</div>
         </div>
     </div>
 </section>

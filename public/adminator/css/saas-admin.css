@@ -95,6 +95,7 @@ html, body { height: 100%; }
 }
 
 .saas-editor { --saas-radius: 14px; --saas-gap: 20px; max-width: 1100px; margin: 0 auto; }
+.saas-editor__actions { display: flex; justify-content: flex-end; margin-top: 18px; }
 .saas-editor.saas-settings {
   max-width: none;
   width: auto;
@@ -102,6 +103,8 @@ html, body { height: 100%; }
 }
 @media (max-width: 720px) {
   .saas-editor.saas-settings { margin: 0 12px 16px; }
+  .saas-menu-form .saas-panel__body { grid-template-columns: 1fr; }
+  .saas-menu-form .saas-switch-row { grid-column: auto; }
 }
 .saas-toolbar {
   display: flex; align-items: center; justify-content: space-between; gap: 16px;
@@ -132,7 +135,7 @@ html, body { height: 100%; }
 .saas-status.is-live { background: var(--success-soft); color: var(--success); border-color: color-mix(in srgb, var(--success) 25%, transparent); }
 .saas-status.is-draft { background: var(--bg-muted); color: var(--t-muted); border-color: var(--border); }
 .saas-status__dot { width: 7px; height: 7px; border-radius: 50%; background: currentColor; box-shadow: 0 0 0 3px color-mix(in srgb, currentColor 18%, transparent); }
-.saas-btn { display: inline-flex; align-items: center; gap: 7px; text-decoration: none; }
+.saas-btn { display: inline-flex; align-items: center; gap: 7px; padding: 11px 18px; text-decoration: none; }
 .saas-btn--save { box-shadow: 0 1px 2px rgb(37 99 235 / .25); }
 .saas-btn--block { width: 100%; justify-content: center; }
 
@@ -161,6 +164,10 @@ html, body { height: 100%; }
 .saas-panel__sub { margin: 4px 0 0; font-size: 13px; color: var(--t-muted); line-height: 1.45; }
 .saas-panel__body { padding: 16px 20px 20px; display: flex; flex-direction: column; gap: 16px; }
 .saas-panel__body--tight { gap: 14px; padding-top: 14px; }
+.saas-menu-form .saas-panel__body { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px 20px; }
+.saas-menu-form .saas-switch-row { grid-column: 1 / -1; }
+.saas-menu-form .saas-field { align-items: stretch; }
+.saas-menu-form .saas-label { display: block; width: 100%; text-align: left; line-height: 1.35; }
 
 .saas-field { display: flex; flex-direction: column; gap: 7px; }
 .saas-label { font-size: 13px; font-weight: 600; color: var(--t-base); }
